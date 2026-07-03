@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="时间银行">
+<title>全家时间银行</title>
+<style>
+:root{
+  --ink:#2b3a4a; --muted:#7b8a99; --bg:#f4f7fb;
+  --c1:#4c88b8; --c2:#ef8f72; --c3:#2f947f; --c4:#b07cc6;
+  --gold:#e7ac2c; --paper:#ffffff;
+  --shadow:0 8px 24px rgba(43,58,74,.10);
+  --radius:14px;
+  --font:"PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);color:var(--ink);background:
+  radial-gradient(circle at 10% 5%, rgba(76,136,184,.10), transparent 20rem),
+  radial-gradient(circle at 90% 10%, rgba(231,172,44,.12), transparent 18rem),
+  var(--bg); min-height:100vh; padding-bottom:90px;}
+button{font:inherit;border:0;cursor:pointer;background:none}
+input,select,textarea{font:inherit;border:1px solid #d7dfe8;border-radius:8px;padding:8px 10px;background:#fff;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--c1);border-color:transparent}
+
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:12px;
+  padding:12px 18px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid #e3eaf2;box-shadow:0 2px 12px rgba(43,58,74,.06)}
+.logo{font-size:26px}
+.title{font-weight:800;font-size:19px}
+.subtitle{font-size:12px;color:var(--muted)}
+.datebox{margin-left:auto;display:flex;align-items:center;gap:8px}
+.datebox input{padding:6px 8px}
+.datebox .today-btn{background:var(--c1);color:#fff;border-radius:8px;padding:6px 12px;font-size:13px}
+
+.tabs{position:fixed;bottom:0;left:0;right:0;z-index:30;display:flex;background:#fff;
+  border-top:1px solid #e3eaf2;box-shadow:0 -4px 16px rgba(43,58,74,.08)}
+.tabs button{flex:1;padding:9px 2px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;
+  font-size:11px;color:var(--muted)}
+.tabs button .ico{font-size:21px}
+.tabs button.on{color:var(--c1);font-weight:700}
+
+.page{max-width:1060px;margin:0 auto;padding:18px 14px}
+.hidden{display:none!important}
+h2{font-size:20px;margin:6px 0 4px}
+.hint{color:var(--muted);font-size:13px;margin:0 0 14px}
+.card{background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:16px}
+.chip{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grow{flex:1}
+.btn{border-radius:10px;padding:9px 16px;font-weight:700;font-size:14px}
+.btn-p{background:var(--c1);color:#fff}
+.btn-g{background:#eef3f8;color:var(--ink)}
+.btn-danger{background:#fdecec;color:#c0392b}
+.btn-sm{padding:5px 10px;font-size:12px;border-radius:8px}
+
+/* member cards on today page */
+.member-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.mcard{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;border-top:5px solid var(--mc,#4c88b8)}
+.mhead{display:flex;align-items:center;gap:10px;padding:12px 14px 8px}
+.mavatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:24px;background:color-mix(in srgb,var(--mc) 15%, #fff)}
+.mname{font-weight:800;font-size:17px}
+.mrole{font-size:12px;color:var(--muted)}
+.mpts{margin-left:auto;text-align:right}
+.mpts b{font-size:20px;color:var(--mc)}
+.mpts span{font-size:11px;color:var(--muted);display:block}
+.evt{display:flex;align-items:center;gap:8px;margin:0 12px 6px;padding:8px 10px;border-radius:10px;
+  background:#f2f7fb;border-left:4px solid var(--mc);font-size:13px}
+.evt .t{font-weight:800;white-space:nowrap}
+.tasklist{padding:6px 12px 12px}
+.task{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;margin-bottom:6px;
+  background:#fafbfd;border:1px solid #eef2f6;transition:.15s}
+.task:active{transform:scale(.985)}
+.task .box{width:26px;height:26px;border-radius:8px;border:2px solid #c6d2dd;display:grid;place-items:center;
+  font-size:16px;color:#fff;flex:none}
+.task.done{background:#effaf3;border-color:#cdeeda}
+.task.done .box{background:#3bb273;border-color:#3bb273}
+.task.done .tt{text-decoration:line-through;color:#8aa093}
+.task .tt{font-size:14px;flex:1}
+.task .pt{font-size:12px;font-weight:800;color:var(--gold);white-space:nowrap}
+.task .cat{font-size:14px}
+.bonus{margin:2px 12px 10px;padding:7px 10px;border-radius:10px;font-size:12.5px;background:#fff8e6;color:#946b00}
+.bonus.got{background:#effaf3;color:#1e7a4f}
+
+.progressbar{height:10px;border-radius:999px;background:#e8eef4;overflow:hidden;margin:6px 0}
+.progressbar>div{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--c3),var(--gold));transition:.3s}
+
+/* week view */
+.wk-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.wk-table th,.wk-table td{border:1px solid #e3eaf2;padding:6px;vertical-align:top;text-align:left}
+.wk-table th{background:#f2f7fb;font-size:12px}
+.wk-table td{min-width:110px;height:64px}
+.wk-evt{border-radius:6px;padding:3px 6px;margin-bottom:3px;font-size:11.5px;color:#fff;line-height:1.35}
+.wk-today{background:#fffbe8}
+.tmpl-table{width:100%;border-collapse:collapse;font-size:13px}
+.tmpl-table th,.tmpl-table td{border:1px solid #e3eaf2;padding:6px 8px;text-align:left}
+.tmpl-table th{background:#f2f7fb}
+
+/* rank */
+.rankrow{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;margin-bottom:8px;background:#fafbfd;border:1px solid #eef2f6}
+.rankrow .medal{font-size:26px;width:34px;text-align:center}
+.rankrow .bar{flex:1}
+.rankrow .score{font-size:20px;font-weight:800}
+.streak{font-size:12px;color:var(--muted)}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.stat{background:#f2f7fb;border-radius:12px;padding:12px;text-align:center}
+.stat b{font-size:22px;display:block}
+.stat span{font-size:12px;color:var(--muted)}
+
+/* rewards */
+.reward{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid #eef2f6;background:#fafbfd;margin-bottom:8px}
+.reward .cost{font-weight:800;color:var(--gold);white-space:nowrap}
+.movie{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:#fafbfd;border:1px solid #eef2f6;margin-bottom:6px;font-size:14px}
+.movie.watched{opacity:.55}
+.movie.watched .mt{text-decoration:line-through}
+
+.review-item{border-left:4px solid var(--c3);background:#fafbfd;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:13.5px}
+.review-item h4{margin:0 0 6px;font-size:14px}
+.field{margin-bottom:10px}
+.field label{display:block;font-size:13px;font-weight:700;margin-bottom:4px}
+.field input,.field textarea,.field select{width:100%}
+textarea{min-height:56px;resize:vertical}
+
+.setting-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:#fafbfd;border:1px solid #eef2f6;margin-bottom:6px;font-size:13.5px;flex-wrap:wrap}
+details{margin-bottom:12px}
+summary{cursor:pointer;font-weight:800;font-size:15px;padding:6px 0}
+.log-adjust{font-size:12px;color:var(--muted)}
+
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#2b3a4a;color:#fff;
+  padding:10px 20px;border-radius:999px;font-size:14px;z-index:99;opacity:0;pointer-events:none;transition:.3s}
+.toast.show{opacity:1}
+.celebrate{position:fixed;inset:0;pointer-events:none;z-index:98;display:grid;place-items:center;font-size:80px;opacity:0;transition:.4s}
+.celebrate.show{opacity:1}
+
+/* ===== 看板模式（iPad 横屏） ===== */
+#page-board{max-width:1400px;padding:12px 12px}
+.board-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.board-head .bdate{font-size:22px;font-weight:800}
+.board-star{margin-left:auto;display:flex;align-items:center;gap:8px;background:#fff;border-radius:999px;
+  padding:8px 18px;box-shadow:var(--shadow);font-weight:800;font-size:16px}
+.board-star .pool{color:var(--gold)}
+.board-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.bcol{background:#fff;border-radius:18px;box-shadow:var(--shadow);overflow:hidden;
+  border-top:8px solid var(--mc,#4c88b8);display:flex;flex-direction:column}
+.bcol-head{display:flex;align-items:center;gap:10px;padding:12px 14px 6px}
+.bcol-head .bava{font-size:38px}
+.bcol-head .bname{font-weight:800;font-size:19px;line-height:1.2}
+.bcol-head .bsub{font-size:12px;color:var(--muted)}
+.bcol-head .bpts{margin-left:auto;text-align:center;background:color-mix(in srgb,var(--mc) 12%, #fff);
+  border-radius:14px;padding:4px 12px}
+.bcol-head .bpts b{font-size:26px;color:var(--mc);display:block;line-height:1.1}
+.bcol-head .bpts span{font-size:10.5px;color:var(--muted)}
+.bevt{margin:4px 12px 2px;padding:7px 10px;border-radius:10px;background:#f2f7fb;
+  border-left:4px solid var(--mc);font-size:13px;font-weight:700}
+.btasks{padding:8px 10px 12px;display:flex;flex-direction:column;gap:8px}
+.btask{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;min-height:58px;
+  background:#f6f8fb;border:2px solid #e8eef4;font-size:15px;font-weight:600;
+  transition:.12s;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;cursor:pointer}
+.btask:active{transform:scale(.96)}
+.btask .bico{font-size:26px;flex:none}
+.btask .btt{flex:1;line-height:1.3}
+.btask .bpt{font-size:14px;font-weight:800;color:var(--gold);white-space:nowrap}
+.btask.done{background:#e6f7ec;border-color:#7fd6a4}
+.btask.done .btt{color:#4c9a6f;text-decoration:line-through}
+.btask.done .bpt{color:#3bb273}
+.btask .bchk{width:30px;height:30px;border-radius:50%;border:2.5px solid #c6d2dd;flex:none;
+  display:grid;place-items:center;color:#fff;font-size:17px;font-weight:900}
+.btask.done .bchk{background:#3bb273;border-color:#3bb273}
+.ball-done{margin:0 10px 12px;padding:10px;border-radius:14px;text-align:center;font-weight:800;
+  background:linear-gradient(90deg,#ffe9a8,#ffd166);color:#7a5800;font-size:15px}
+.fly-star{position:fixed;z-index:97;font-size:26px;pointer-events:none;animation:flyup 1s ease-out forwards}
+@keyframes flyup{
+  0%{transform:translate(0,0) scale(1);opacity:1}
+  100%{transform:translate(var(--dx,0),-130px) scale(1.6);opacity:0}
+}
+@media (max-width:700px){
+  .board-grid{grid-template-columns:repeat(2,1fr)}
+}
+
+@media print{
+  .topbar,.tabs,.no-print{display:none!important}
+  body{background:#fff;padding:0}
+  .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}
+  .page{max-width:100%}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">⏳</div>
+  <div>
+    <div class="title">全家时间银行</div>
+    <div class="subtitle">按时开始 · 认真完成 · 互相加油</div>
+  </div>
+  <div class="datebox no-print">
+    <input type="date" id="datePick">
+    <button class="today-btn" onclick="goToday()">今天</button>
+  </div>
+</div>
+
+<main>
+  <section class="page" id="page-board">
+    <div class="board-head">
+      <div class="bdate" id="boardDate"></div>
+      <div class="board-star" id="boardStar"></div>
+    </div>
+    <div class="board-grid" id="boardGrid"></div>
+  </section>
+
+  <section class="page hidden" id="page-today">
+    <h2 id="todayTitle">今日打卡</h2>
+    <p class="hint" id="todayHint">点击任务即可完成打卡；再点一次可取消。当天的课程会自动列出。</p>
+    <div class="card" id="familyDayCard"></div>
+    <div class="member-grid" id="memberGrid"></div>
+  </section>
+
+  <section class="page hidden" id="page-week">
+    <div class="row no-print" style="justify-content:space-between">
+      <h2>本周计划</h2>
+      <div>
+        <button class="btn btn-g btn-sm" onclick="shiftWeek(-1)">← 上周</button>
+        <button class="btn btn-g btn-sm" onclick="shiftWeek(1)">下周 →</button>
+        <button class="btn btn-p btn-sm" onclick="window.print()">🖨 打印贴墙</button>
+      </div>
+    </div>
+    <p class="hint" id="weekRangeHint"></p>
+    <div class="card" style="overflow-x:auto"><div id="weekTable"></div></div>
+    <div class="card">
+      <h3 style="margin:0 0 8px">📋 建议作息模板（可在设置中修改课程后自动更新课表）</h3>
+      <div id="tmplArea"></div>
+    </div>
+  </section>
+
+  <section class="page hidden" id="page-rank">
+    <h2>家庭评比</h2>
+    <p class="hint" id="rankRangeHint"></p>
+    <div class="card" id="rankCard"></div>
+    <div class="card" id="familyPoolCard"></div>
+    <div class="card" id="statsCard"></div>
+  </section>
+
+  <section class="page hidden" id="page-reward">
+    <h2>奖励中心</h2>
+    <p class="hint">个人积分兑个人奖励；家庭积分（全家达标日攒出来的）兑全家活动。</p>
+    <div class="card" id="personalRewardCard"></div>
+    <div class="card" id="familyRewardCard"></div>
+    <div class="card" id="movieCard"></div>
+    <div class="card" id="redeemLogCard"></div>
+  </section>
+
+  <section class="page hidden" id="page-review">
+    <h2>每周家庭复盘</h2>
+    <p class="hint">建议每周日晚全家 10 分钟：说进步、聊困难、定下周。坚持复盘每人 +2 分。</p>
+    <div class="card" id="reviewFormCard"></div>
+    <div class="card"><h3 style="margin:0 0 10px">📚 复盘记录</h3><div id="reviewList"></div></div>
+  </section>
+
+  <section class="page hidden" id="page-setting">
+    <h2>设置</h2>
+    <p class="hint">成员、任务、课程、奖励都可以修改，让工具跟着学期和假期一直用下去。</p>
+    <div class="card"><details open><summary>👨‍👩‍👧‍👦 家庭成员</summary><div id="memberSetting"></div></details></div>
+    <div class="card"><details><summary>✅ 日常任务管理</summary><div id="taskSetting"></div></details></div>
+    <div class="card"><details><summary>📅 课程 / 固定日程管理</summary><div id="eventSetting"></div></details></div>
+    <div class="card"><details><summary>💾 数据备份</summary>
+      <p class="hint">数据保存在本机浏览器中。建议每周导出一次备份文件，防止清理浏览器时丢失。</p>
+      <div class="row">
+        <button class="btn btn-p" onclick="exportData()">导出备份</button>
+        <button class="btn btn-g" onclick="document.getElementById('importFile').click()">导入备份</button>
+        <input type="file" id="importFile" accept=".json" class="hidden" onchange="importData(this)">
+        <button class="btn btn-danger" onclick="resetAll()">清空全部数据</button>
+      </div>
+    </details></div>
+  </section>
+</main>
+
+<nav class="tabs no-print">
+  <button data-page="board" class="on"><span class="ico">🖐</span>看板</button>
+  <button data-page="today"><span class="ico">✅</span>今日</button>
+  <button data-page="week"><span class="ico">📅</span>周计划</button>
+  <button data-page="rank"><span class="ico">🏆</span>评比</button>
+  <button data-page="reward"><span class="ico">🎁</span>奖励</button>
+  <button data-page="review"><span class="ico">🪞</span>复盘</button>
+  <button data-page="setting"><span class="ico">⚙️</span>设置</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+<div class="celebrate" id="celebrate">🎉</div>
+
+<script>
+/* ================= 数据模型 ================= */
+const LS_KEY = 'familyTimeBank_v1';
+
+const DEFAULT_DATA = {
+  members: [
+    {id:'m1', name:'大宝', role:'初二学生', emoji:'🧑‍🎓', color:'#4c88b8'},
+    {id:'m2', name:'小宝', role:'幼儿园大班', emoji:'🧒', color:'#ef8f72'},
+    {id:'m3', name:'爸爸', role:'家长', emoji:'👨', color:'#2f947f'},
+    {id:'m4', name:'妈妈', role:'家长', emoji:'👩', color:'#b07cc6'}
+  ],
+  // cat: study 学习 / sport 运动 / self 自律 / family 家庭
+  tasks: [
+    // 大宝（初二）
+    {id:'t1',  mid:'m1', title:'按时开始上午第一项学习（9点前）', pts:1, cat:'self'},
+    {id:'t2',  mid:'m1', title:'英语：暑假作业 + 背10个单词', pts:2, cat:'study'},
+    {id:'t3',  mid:'m1', title:'数学：暑假作业 / 补习班复习', pts:2, cat:'study'},
+    {id:'t4',  mid:'m1', title:'科学：暑假作业 / 预习', pts:2, cat:'study'},
+    {id:'t5',  mid:'m1', title:'语文 / 社会：暑假作业（轮流安排）', pts:2, cat:'study'},
+    {id:'t6',  mid:'m1', title:'课外阅读 30 分钟', pts:1, cat:'study'},
+    {id:'t7',  mid:'m1', title:'运动 40 分钟（羽毛球 / 跑步）', pts:2, cat:'sport'},
+    {id:'t8',  mid:'m1', title:'今日课程全部按时上课不迟到', pts:1, cat:'self'},
+    {id:'t9',  mid:'m1', title:'屏幕娱乐 ≤ 约定时间', pts:2, cat:'self'},
+    {id:'t10', mid:'m1', title:'睡前自己排好明天的计划', pts:1, cat:'self'},
+    {id:'t11', mid:'m1', title:'帮家里做一件家务', pts:1, cat:'family'},
+    // 小宝（大班）
+    {id:'t20', mid:'m2', title:'按时起床、自己穿衣洗漱', pts:1, cat:'self'},
+    {id:'t21', mid:'m2', title:'象棋课准时出门、认真上课', pts:2, cat:'study'},
+    {id:'t22', mid:'m2', title:'亲子共读绘本 20 分钟', pts:1, cat:'study'},
+    {id:'t23', mid:'m2', title:'启蒙小任务 15 分钟（数数 / 写数字 / 认字）', pts:1, cat:'study'},
+    {id:'t24', mid:'m2', title:'户外活动 1 小时', pts:2, cat:'sport'},
+    {id:'t25', mid:'m2', title:'自己收拾玩具和小书桌', pts:1, cat:'self'},
+    {id:'t26', mid:'m2', title:'看动画不超过约定集数', pts:2, cat:'self'},
+    {id:'t27', mid:'m2', title:'帮爸爸妈妈做一件小事', pts:1, cat:'family'},
+    {id:'t28', mid:'m2', title:'按时上床睡觉（21:00 前）', pts:1, cat:'self'},
+    // 爸爸
+    {id:'t30', mid:'m3', title:'20:00 后专心陪孩子 30 分钟以上', pts:2, cat:'family'},
+    {id:'t31', mid:'m3', title:'检查 / 关心孩子今天的学习', pts:1, cat:'family'},
+    {id:'t32', mid:'m3', title:'自己运动打卡（任意 20 分钟）', pts:2, cat:'sport'},
+    {id:'t33', mid:'m3', title:'陪伴时间不刷手机', pts:2, cat:'self'},
+    {id:'t34', mid:'m3', title:'给家人一句具体的表扬', pts:1, cat:'family'},
+    // 妈妈
+    {id:'t40', mid:'m4', title:'20:00 后专心陪孩子 30 分钟以上', pts:2, cat:'family'},
+    {id:'t41', mid:'m4', title:'检查 / 关心孩子今天的学习', pts:1, cat:'family'},
+    {id:'t42', mid:'m4', title:'自己运动打卡（任意 20 分钟）', pts:2, cat:'sport'},
+    {id:'t43', mid:'m4', title:'陪伴时间不刷手机', pts:2, cat:'self'},
+    {id:'t44', mid:'m4', title:'给家人一句具体的表扬', pts:1, cat:'family'}
+  ],
+  // 固定日程：mode:'dates' 指定日期列表；mode:'range' 起止日期+星期
+  events: [
+    {id:'e1', mid:'m1', title:'英语口语网课', mode:'dates', time:'21:30', endTime:'22:00',
+      dates:['2026-07-01','2026-07-03','2026-07-07','2026-07-08','2026-07-10','2026-07-14','2026-07-15']},
+    {id:'e2', mid:'m1', title:'英语口语网课', mode:'dates', time:'20:30', endTime:'21:00', dates:['2026-07-02']},
+    {id:'e3', mid:'m1', title:'英语口语网课', mode:'dates', time:'21:00', endTime:'21:30',
+      dates:['2026-07-06','2026-07-09','2026-07-13','2026-07-16']},
+    {id:'e4', mid:'m1', title:'英语口语网课', mode:'dates', time:'17:00', endTime:'17:30', dates:['2026-07-05','2026-07-12']},
+    {id:'e5', mid:'m1', title:'英语口语网课', mode:'dates', time:'16:00', endTime:'16:30', dates:['2026-07-11']},
+    {id:'e6', mid:'m1', title:'数学补习班', mode:'dates', time:'16:00', endTime:'18:00',
+      dates:['2026-07-13','2026-07-14','2026-07-16','2026-07-18','2026-07-20','2026-07-22','2026-07-23','2026-07-24','2026-07-27','2026-07-29','2026-07-30','2026-07-31']},
+    {id:'e7', mid:'m1', title:'科学补习班', mode:'range', time:'13:00', endTime:'15:00',
+      start:'2026-07-29', end:'2026-08-19', dows:[1,2,3,4,5,6]},
+    {id:'e8', mid:'m2', title:'国际象棋课（10:00 出门）', mode:'range', time:'10:15', endTime:'11:45',
+      start:'2026-07-06', end:'2026-07-22', dows:[1,2,3,4,5]}
+  ],
+  log: {},          // {'YYYY-MM-DD': {taskId:true}}
+  redemptions: [],  // {date, memberName|'家庭', reward, cost, type:'personal'|'family'}
+  reviews: [],      // {week, best, hard, next, parentSee, kidNeed, ts}
+  rewards: {
+    personal: [
+      {name:'选一次全家晚餐菜单', cost:15},
+      {name:'多 30 分钟自由活动时间', cost:20},
+      {name:'买一本喜欢的书 / 一个小玩具', cost:40},
+      {name:'约一次好朋友聚会', cost:60},
+      {name:'实现一个小愿望（和爸妈商量）', cost:100}
+    ],
+    family: [
+      {name:'家庭电影夜（从影单里选）', cost:15},
+      {name:'全家台球 / 桌游专场', cost:25},
+      {name:'全家爬山一日游', cost:40},
+      {name:'全家露营过夜', cost:80}
+    ]
+  },
+  sound: true,
+  movies: [
+    {title:'寻梦环游记', watched:false},
+    {title:'疯狂动物城', watched:false},
+    {title:'地球脉动（纪录片，分集看）', watched:false},
+    {title:'哈利·波特与魔法石', watched:false}
+  ],
+  familySpent: 0
+};
+
+let D = load();
+function load(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw){ const d = JSON.parse(raw); return Object.assign(JSON.parse(JSON.stringify(DEFAULT_DATA)), d); }
+  }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_DATA));
+}
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(D)); }
+
+/* ================= 日期工具 ================= */
+let viewDate = fmt(new Date());
+let weekOffset = 0;
+function fmt(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function parse(s){ const [y,m,dd]=s.split('-').map(Number); return new Date(y,m-1,dd); }
+function addDays(s,n){ const d=parse(s); d.setDate(d.getDate()+n); return fmt(d); }
+function dow(s){ return parse(s).getDay(); } // 0=Sun
+const DOW_CN = ['日','一','二','三','四','五','六'];
+function weekStart(s){ const d=parse(s); const wd=(d.getDay()+6)%7; d.setDate(d.getDate()-wd); return fmt(d); } // Monday
+function cnDate(s){ const d=parse(s); return (d.getMonth()+1)+'月'+d.getDate()+'日 星期'+DOW_CN[d.getDay()]; }
+
+/* ================= 业务计算 ================= */
+const CATS = {study:{n:'学习',e:'🎓',c:'#4c88b8'}, sport:{n:'运动',e:'🏃',c:'#2f947f'},
+              self:{n:'自律',e:'⏰',c:'#e7ac2c'}, family:{n:'家庭',e:'❤️',c:'#ef8f72'}};
+
+function eventsOn(dateStr){
+  const wd = dow(dateStr);
+  return D.events.filter(e=>{
+    if(e.mode==='dates') return (e.dates||[]).includes(dateStr);
+    return dateStr>=e.start && dateStr<=e.end && (e.dows||[]).includes(wd);
+  }).sort((a,b)=>a.time.localeCompare(b.time));
+}
+function tasksOf(mid){ return D.tasks.filter(t=>t.mid===mid); }
+function dayLog(dateStr){ return D.log[dateStr] || {}; }
+function isDone(dateStr,tid){ return !!dayLog(dateStr)[tid]; }
+function memberDayPts(mid,dateStr){
+  const lg = dayLog(dateStr); let p=0;
+  tasksOf(mid).forEach(t=>{ if(lg[t.id]) p+=t.pts; });
+  if(allDone(mid,dateStr)) p+=2; // 全勤奖
+  return p;
+}
+function allDone(mid,dateStr){
+  const ts = tasksOf(mid); if(!ts.length) return false;
+  const lg = dayLog(dateStr);
+  return ts.every(t=>lg[t.id]);
+}
+function familyStarDay(dateStr){ // 全家达标日：每人当天 ≥5 分
+  return D.members.every(m=>memberDayPts(m.id,dateStr)>=5);
+}
+function rangePts(mid,from,to){
+  let p=0;
+  for(let d=from; d<=to; d=addDays(d,1)) p+=memberDayPts(mid,d);
+  return p;
+}
+function totalPts(mid){
+  let p=0;
+  Object.keys(D.log).forEach(d=>{ p+=memberDayPts(mid,d); });
+  D.reviews.forEach(()=>{ p+=2; }); // 每次复盘全员+2
+  D.redemptions.filter(r=>r.type==='personal'&&r.mid===mid).forEach(r=>{ p-=r.cost; });
+  return p;
+}
+function familyPoolTotal(){
+  let stars=0;
+  Object.keys(D.log).forEach(d=>{ if(familyStarDay(d)) stars++; });
+  return stars*5 - (D.familySpent||0);
+}
+function familyStarCount(){
+  let stars=0; Object.keys(D.log).forEach(d=>{ if(familyStarDay(d)) stars++; }); return stars;
+}
+function streak(mid){
+  let s=0, d=fmt(new Date());
+  if(memberDayPts(mid,d)===0) d=addDays(d,-1); // 今天还没打卡不打断连续
+  while(memberDayPts(mid,d)>0){ s++; d=addDays(d,-1); }
+  return s;
+}
+
+/* ================= 音效 ================= */
+let _ac=null;
+function ac(){ if(!_ac){ try{ _ac=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return _ac; }
+function tone(freq,start,dur,type,vol){
+  const c=ac(); if(!c) return;
+  const o=c.createOscillator(), g=c.createGain();
+  o.type=type||'sine'; o.frequency.value=freq;
+  g.gain.setValueAtTime(0,c.currentTime+start);
+  g.gain.linearRampToValueAtTime(vol||.18,c.currentTime+start+.02);
+  g.gain.exponentialRampToValueAtTime(.001,c.currentTime+start+dur);
+  o.connect(g); g.connect(c.destination);
+  o.start(c.currentTime+start); o.stop(c.currentTime+start+dur+.05);
+}
+function playDing(){ if(D.sound===false) return; tone(880,0,.15,'sine',.2); tone(1318,.08,.25,'sine',.15); }
+function playFanfare(){ if(D.sound===false) return; [523,659,784,1046].forEach((f,i)=>tone(f,i*.12,.3,'triangle',.16)); }
+function playFamily(){ if(D.sound===false) return; [523,659,784,1046,1318,1568].forEach((f,i)=>tone(f,i*.1,.35,'triangle',.15)); }
+function flyStars(x,y,emo,n){
+  for(let i=0;i<(n||3);i++){
+    const s=document.createElement('div'); s.className='fly-star'; s.textContent=emo||'⭐';
+    s.style.left=(x-13)+'px'; s.style.top=(y-13)+'px';
+    s.style.setProperty('--dx',(Math.random()*120-60)+'px');
+    s.style.animationDelay=(i*0.07)+'s';
+    document.body.appendChild(s);
+    setTimeout(()=>s.remove(),1400);
+  }
+}
+
+/* ================= 通用 UI ================= */
+function toast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),1800);
+}
+function celebrate(emo){
+  const c=document.getElementById('celebrate'); c.textContent=emo; c.classList.add('show');
+  clearTimeout(c._h); c._h=setTimeout(()=>c.classList.remove('show'),900);
+}
+function esc(s){ return String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
+
+document.querySelectorAll('.tabs button').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.querySelectorAll('main .page').forEach(p=>p.classList.add('hidden'));
+    document.getElementById('page-'+b.dataset.page).classList.remove('hidden');
+    renderAll();
+    window.scrollTo(0,0);
+  };
+});
+document.getElementById('datePick').onchange=e=>{ viewDate=e.target.value||fmt(new Date()); renderAll(); };
+function goToday(){ viewDate=fmt(new Date()); document.getElementById('datePick').value=viewDate; weekOffset=0; renderAll(); }
+
+/* ================= 今日视图 ================= */
+function renderToday(){
+  document.getElementById('todayTitle').textContent = cnDate(viewDate) + ' · 打卡';
+  const grid=document.getElementById('memberGrid'); grid.innerHTML='';
+  D.members.forEach(m=>{
+    const card=document.createElement('div'); card.className='mcard'; card.style.setProperty('--mc',m.color);
+    const evts=eventsOn(viewDate).filter(e=>e.mid===m.id);
+    const ts=tasksOf(m.id);
+    const lg=dayLog(viewDate);
+    const doneCnt=ts.filter(t=>lg[t.id]).length;
+    const pts=memberDayPts(m.id,viewDate);
+    let html=`<div class="mhead">
+      <div class="mavatar">${m.emoji}</div>
+      <div><div class="mname">${esc(m.name)}</div><div class="mrole">${esc(m.role)}</div></div>
+      <div class="mpts"><b>+${pts}</b><span>今日得分 · 总分 ${totalPts(m.id)}</span></div>
+    </div>`;
+    evts.forEach(e=>{
+      html+=`<div class="evt"><span class="t">🕐 ${e.time}${e.endTime?'–'+e.endTime:''}</span><span>${esc(e.title)}</span></div>`;
+    });
+    html+=`<div style="margin:4px 14px"><div class="progressbar"><div style="width:${ts.length?Math.round(doneCnt/ts.length*100):0}%"></div></div></div>`;
+    html+=`<div class="tasklist">`;
+    ts.forEach(t=>{
+      const done=!!lg[t.id]; const c=CATS[t.cat]||CATS.study;
+      html+=`<div class="task ${done?'done':''}" onclick="toggleTask('${t.id}',event)">
+        <div class="box">${done?'✓':''}</div>
+        <span class="cat" title="${c.n}">${c.e}</span>
+        <span class="tt">${esc(t.title)}</span>
+        <span class="pt">+${t.pts}</span>
+      </div>`;
+    });
+    html+=`</div>`;
+    if(ts.length){
+      html += allDone(m.id,viewDate)
+        ? `<div class="bonus got">🌟 全部完成！全勤奖 +2 已入账</div>`
+        : `<div class="bonus">完成全部任务可得全勤奖 +2（还差 ${ts.length-doneCnt} 项）</div>`;
+    }
+    card.innerHTML=html;
+    grid.appendChild(card);
+  });
+  // family day card
+  const fam=document.getElementById('familyDayCard');
+  const star=familyStarDay(viewDate);
+  const cnt=D.members.filter(m=>memberDayPts(m.id,viewDate)>=5).length;
+  fam.innerHTML = star
+    ? `<div style="font-size:15px">⭐ <b>今天是「全家达标日」！</b>家庭积分池 +5，离全家大奖又近一步～</div>`
+    : `<div style="font-size:14px">👨‍👩‍👧‍👦 每人今天拿到 <b>5 分</b>，就点亮「全家达标日」，家庭积分池 +5。目前达标 <b>${cnt}/${D.members.length}</b> 人。</div>`;
+}
+function toggleTask(tid, ev){
+  const lg = D.log[viewDate] || (D.log[viewDate]={});
+  const t = D.tasks.find(x=>x.id===tid);
+  const m = D.members.find(x=>x.id===t.mid);
+  const wasFamily = familyStarDay(viewDate);
+  if(lg[tid]){ delete lg[tid]; }
+  else{
+    lg[tid]=true;
+    const x = ev ? (ev.clientX||innerWidth/2) : innerWidth/2;
+    const y = ev ? (ev.clientY||innerHeight/2) : innerHeight/2;
+    if(!wasFamily && familyStarDay(viewDate)){
+      celebrate('🎆'); playFamily(); flyStars(x,y,'🎉',8);
+      toast('全家达标日达成！家庭积分 +5');
+    } else if(allDone(t.mid,viewDate)){
+      celebrate('🌟'); playFanfare(); flyStars(x,y,'🌟',6);
+      toast(m.name+' 今日全勤！+2 全勤奖');
+    } else {
+      playDing(); flyStars(x,y,'⭐',3);
+      toast('+'+t.pts+' 分 · '+m.name);
+    }
+  }
+  save(); renderAll();
+}
+
+/* ================= 看板模式 ================= */
+function renderBoard(){
+  document.getElementById('boardDate').textContent='🖐 '+cnDate(viewDate);
+  const star=familyStarDay(viewDate);
+  const cnt=D.members.filter(m=>memberDayPts(m.id,viewDate)>=5).length;
+  document.getElementById('boardStar').innerHTML =
+    (star?'⭐ 今天全家达标！':'👨‍👩‍👧‍👦 达标 '+cnt+'/'+D.members.length+' 人')+
+    ' <span class="pool">家庭积分 '+familyPoolTotal()+'</span>';
+  const grid=document.getElementById('boardGrid'); grid.innerHTML='';
+  D.members.forEach(m=>{
+    const col=document.createElement('div'); col.className='bcol'; col.style.setProperty('--mc',m.color);
+    const lg=dayLog(viewDate); const ts=tasksOf(m.id);
+    const evts=eventsOn(viewDate).filter(e=>e.mid===m.id);
+    let html=`<div class="bcol-head">
+      <div class="bava">${m.emoji}</div>
+      <div><div class="bname">${esc(m.name)}</div><div class="bsub">🔥 ${streak(m.id)} 天 · 总分 ${totalPts(m.id)}</div></div>
+      <div class="bpts"><b>${memberDayPts(m.id,viewDate)}</b><span>今日</span></div>
+    </div>`;
+    evts.forEach(e=>{ html+=`<div class="bevt">🕐 ${e.time} ${esc(e.title)}</div>`; });
+    html+='<div class="btasks">';
+    ts.forEach(t=>{
+      const done=!!lg[t.id]; const c=CATS[t.cat]||CATS.study;
+      html+=`<div class="btask ${done?'done':''}" onclick="toggleTask('${t.id}',event)">
+        <span class="bico">${c.e}</span>
+        <span class="btt">${esc(t.title)}</span>
+        <span class="bpt">+${t.pts}</span>
+        <span class="bchk">${done?'✓':''}</span>
+      </div>`;
+    });
+    html+='</div>';
+    if(ts.length && allDone(m.id,viewDate)) html+='<div class="ball-done">🌟 今日全勤 +2！真棒！</div>';
+    col.innerHTML=html;
+    grid.appendChild(col);
+  });
+}
+
+/* ================= 周计划视图 ================= */
+function renderWeek(){
+  const ws = addDays(weekStart(viewDate), weekOffset*7);
+  const days=[]; for(let i=0;i<7;i++) days.push(addDays(ws,i));
+  document.getElementById('weekRangeHint').textContent =
+    cnDate(days[0])+' — '+cnDate(days[6])+' · 固定课程一览（可打印贴墙）';
+  let html='<table class="wk-table"><tr><th style="min-width:60px">成员</th>';
+  days.forEach(d=>{ html+=`<th class="${d===fmt(new Date())?'wk-today':''}">${parse(d).getMonth()+1}/${parse(d).getDate()}<br>周${DOW_CN[dow(d)]}</th>`; });
+  html+='</tr>';
+  D.members.forEach(m=>{
+    const rowEvts = days.map(d=>eventsOn(d).filter(e=>e.mid===m.id));
+    if(rowEvts.every(a=>a.length===0) && (m.role==='家长')) return; // 家长无固定课程则不占行
+    html+=`<tr><td><b>${m.emoji} ${esc(m.name)}</b></td>`;
+    rowEvts.forEach((arr,i)=>{
+      html+=`<td class="${days[i]===fmt(new Date())?'wk-today':''}">`;
+      arr.forEach(e=>{ html+=`<div class="wk-evt" style="background:${m.color}">${e.time} ${esc(e.title)}</div>`; });
+      html+='</td>';
+    });
+    html+='</tr>';
+  });
+  html+='</table>';
+  document.getElementById('weekTable').innerHTML=html;
+  renderTmpl();
+}
+function shiftWeek(n){ weekOffset+=n; renderWeek(); }
+function renderTmpl(){
+  document.getElementById('tmplArea').innerHTML = `
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px">
+    <div>
+      <h4 style="margin:4px 0">🧑‍🎓 ${esc(D.members[0].name)}（初二 · 暑假工作日）</h4>
+      <table class="tmpl-table">
+        <tr><th>时间</th><th>安排</th></tr>
+        <tr><td>7:30</td><td>起床、早餐</td></tr>
+        <tr><td>8:30–9:10</td><td>英语暑假作业 + 背单词</td></tr>
+        <tr><td>9:20–10:00</td><td>数学暑假作业</td></tr>
+        <tr><td>10:15–11:00</td><td>运动：跑步 / 羽毛球（避开正午）</td></tr>
+        <tr><td>11:10–11:50</td><td>语文 / 社会作业（隔天轮换）</td></tr>
+        <tr><td>12:00–13:00</td><td>午饭 + 午休</td></tr>
+        <tr><td>13:00–15:00</td><td>科学班（7/29 起）；无课时：科学作业 + 阅读</td></tr>
+        <tr><td>16:00–18:00</td><td>数学班（课日）；无课时：自由 / 补作业</td></tr>
+        <tr><td>19:00–19:40</td><td>课外阅读 30 分钟</td></tr>
+        <tr><td>20:00–21:00</td><td>亲子时间 / 全家运动</td></tr>
+        <tr><td>21:00–22:00</td><td>英语口语网课（按课表）</td></tr>
+        <tr><td>22:30</td><td>睡觉</td></tr>
+      </table>
+    </div>
+    <div>
+      <h4 style="margin:4px 0">🧒 ${esc(D.members[1].name)}（大班 · 暑假工作日）</h4>
+      <table class="tmpl-table">
+        <tr><th>时间</th><th>安排</th></tr>
+        <tr><td>8:00</td><td>起床、自己穿衣洗漱、早餐</td></tr>
+        <tr><td>9:00–9:40</td><td>自由玩耍 / 搭积木</td></tr>
+        <tr><td>10:00</td><td>出门上象棋课（7/6–7/22 工作日）</td></tr>
+        <tr><td>10:15–11:45</td><td>国际象棋课</td></tr>
+        <tr><td>12:15–14:30</td><td>午饭 + 午睡</td></tr>
+        <tr><td>15:00–15:20</td><td>启蒙小任务（数数 / 写数字 / 认字）</td></tr>
+        <tr><td>16:30–17:30</td><td>户外活动 1 小时</td></tr>
+        <tr><td>18:00</td><td>晚饭（先吃）</td></tr>
+        <tr><td>20:00–20:40</td><td>亲子共读 + 亲子游戏</td></tr>
+        <tr><td>21:00</td><td>上床睡觉</td></tr>
+      </table>
+    </div>
+  </div>
+  <p class="hint" style="margin-top:10px">💡 周末：上午作业 / 兴趣，下午全家活动（爬山、羽毛球、露营、台球），晚上电影夜或棋牌局。家长陪伴时间：工作日 20:00 后、周末全天。</p>`;
+}
+
+/* ================= 评比视图 ================= */
+function renderRank(){
+  const ws=weekStart(viewDate), we=addDays(ws,6);
+  document.getElementById('rankRangeHint').textContent='本周（'+cnDate(ws)+' — '+cnDate(we)+'）积分排行，周一自动重新开始。';
+  const rows=D.members.map(m=>({m, wk:rangePts(m.id,ws,we), tot:totalPts(m.id), st:streak(m.id)}))
+    .sort((a,b)=>b.wk-a.wk);
+  const medals=['🥇','🥈','🥉','🎖'];
+  const max=Math.max(1,...rows.map(r=>r.wk));
+  let html='<h3 style="margin:0 0 10px">🏆 本周排行榜</h3>';
+  rows.forEach((r,i)=>{
+    html+=`<div class="rankrow">
+      <div class="medal">${medals[i]||'🎖'}</div>
+      <div style="font-size:22px">${r.m.emoji}</div>
+      <div class="bar">
+        <div style="font-weight:800">${esc(r.m.name)} <span class="streak">🔥 连续打卡 ${r.st} 天 · 累计 ${r.tot} 分</span></div>
+        <div class="progressbar"><div style="width:${Math.round(r.wk/max*100)}%;background:${r.m.color}"></div></div>
+      </div>
+      <div class="score" style="color:${r.m.color}">${r.wk}</div>
+    </div>`;
+  });
+  html+='<p class="hint" style="margin:8px 0 0">评比的目的是互相激励：周冠军可优先选下周末的家庭活动；落后的家人，大家要帮 TA 找原因、加加油。</p>';
+  document.getElementById('rankCard').innerHTML=html;
+
+  const pool=familyPoolTotal(), stars=familyStarCount();
+  const nextReward=D.rewards.family.slice().sort((a,b)=>a.cost-b.cost).find(r=>r.cost>pool);
+  document.getElementById('familyPoolCard').innerHTML=`
+    <h3 style="margin:0 0 8px">⭐ 家庭积分池</h3>
+    <div class="row"><div style="font-size:34px;font-weight:800;color:var(--gold)">${pool} 分</div>
+    <div class="hint" style="margin:0">已点亮 ${stars} 个全家达标日（每个 +5）</div></div>
+    ${nextReward?`<div class="progressbar" style="height:14px"><div style="width:${Math.min(100,Math.round(pool/nextReward.cost*100))}%"></div></div>
+    <div class="hint" style="margin:0">离「${esc(nextReward.name)}」（${nextReward.cost} 分）还差 ${Math.max(0,nextReward.cost-pool)} 分</div>`:
+    '<div class="hint" style="margin:0">家庭奖励都够兑啦，去奖励中心看看！</div>'}`;
+
+  // stats
+  const today=fmt(new Date());
+  let html2='<h3 style="margin:0 0 10px">📊 全家累计</h3><div class="statgrid">';
+  html2+=`<div class="stat"><b>${Object.keys(D.log).length}</b><span>打卡天数</span></div>`;
+  html2+=`<div class="stat"><b>${stars}</b><span>全家达标日</span></div>`;
+  html2+=`<div class="stat"><b>${D.reviews.length}</b><span>家庭复盘次数</span></div>`;
+  html2+=`<div class="stat"><b>${D.redemptions.length}</b><span>已兑换奖励</span></div>`;
+  html2+='</div>';
+  document.getElementById('statsCard').innerHTML=html2;
+}
+
+/* ================= 奖励视图 ================= */
+function renderReward(){
+  // personal
+  let html=`<h3 style="margin:0 0 4px">🎁 个人奖励</h3>
+  <div class="row" style="margin-bottom:8px"><label style="font-size:13px">谁来兑换：</label>
+  <select id="redeemWho">${D.members.map(m=>`<option value="${m.id}">${m.emoji} ${esc(m.name)}（${totalPts(m.id)} 分）</option>`).join('')}</select></div>`;
+  D.rewards.personal.forEach((r,i)=>{
+    html+=`<div class="reward"><span class="grow">${esc(r.name)}</span><span class="cost">${r.cost} 分</span>
+    <button class="btn btn-p btn-sm" onclick="redeemPersonal(${i})">兑换</button>
+    <button class="btn btn-g btn-sm" onclick="editReward('personal',${i})">改</button>
+    <button class="btn btn-danger btn-sm" onclick="delReward('personal',${i})">删</button></div>`;
+  });
+  html+=`<button class="btn btn-g btn-sm" onclick="addReward('personal')">＋ 添加个人奖励</button>`;
+  document.getElementById('personalRewardCard').innerHTML=html;
+
+  const pool=familyPoolTotal();
+  let html2=`<h3 style="margin:0 0 4px">👨‍👩‍👧‍👦 家庭奖励（当前家庭积分：<span style="color:var(--gold)">${pool}</span> 分）</h3>`;
+  D.rewards.family.forEach((r,i)=>{
+    html2+=`<div class="reward"><span class="grow">${esc(r.name)}</span><span class="cost">${r.cost} 分</span>
+    <button class="btn btn-p btn-sm" onclick="redeemFamily(${i})" ${pool<r.cost?'disabled style="opacity:.4"':''}>兑换</button>
+    <button class="btn btn-g btn-sm" onclick="editReward('family',${i})">改</button>
+    <button class="btn btn-danger btn-sm" onclick="delReward('family',${i})">删</button></div>`;
+  });
+  html2+=`<button class="btn btn-g btn-sm" onclick="addReward('family')">＋ 添加家庭奖励</button>`;
+  document.getElementById('familyRewardCard').innerHTML=html2;
+
+  // movies
+  let html3=`<h3 style="margin:0 0 4px">🎬 家庭影单（提前规划，看完打勾）</h3>
+  <p class="hint">电影电视只从影单里选，由家长提前添加，避免无节制观看。</p>`;
+  D.movies.forEach((mv,i)=>{
+    html3+=`<div class="movie ${mv.watched?'watched':''}">
+    <input type="checkbox" ${mv.watched?'checked':''} onchange="toggleMovie(${i})">
+    <span class="mt grow">${esc(mv.title)}</span>
+    <button class="btn btn-danger btn-sm" onclick="delMovie(${i})">删</button></div>`;
+  });
+  html3+=`<div class="row" style="margin-top:8px"><input id="newMovie" class="grow" placeholder="添加影片 / 剧集 / 纪录片">
+  <button class="btn btn-p btn-sm" onclick="addMovie()">添加</button></div>`;
+  document.getElementById('movieCard').innerHTML=html3;
+
+  // redemption log
+  let html4='<h3 style="margin:0 0 8px">🧾 兑换记录</h3>';
+  if(!D.redemptions.length) html4+='<p class="hint">还没有兑换记录，继续攒分吧！</p>';
+  D.redemptions.slice().reverse().forEach(r=>{
+    html4+=`<div class="setting-item"><span>${r.date}</span><b>${esc(r.who)}</b><span class="grow">${esc(r.reward)}</span><span style="color:var(--gold);font-weight:700">-${r.cost} 分</span></div>`;
+  });
+  document.getElementById('redeemLogCard').innerHTML=html4;
+}
+function redeemPersonal(i){
+  const mid=document.getElementById('redeemWho').value;
+  const m=D.members.find(x=>x.id===mid); const r=D.rewards.personal[i];
+  if(totalPts(mid)<r.cost){ toast(m.name+' 的积分还不够哦，继续加油！'); return; }
+  if(!confirm(m.name+' 用 '+r.cost+' 分兑换「'+r.name+'」？')) return;
+  D.redemptions.push({date:fmt(new Date()), who:m.name, mid, reward:r.name, cost:r.cost, type:'personal'});
+  save(); celebrate('🎁'); toast('兑换成功！'); renderAll();
+}
+function redeemFamily(i){
+  const r=D.rewards.family[i];
+  if(familyPoolTotal()<r.cost){ toast('家庭积分还不够，全家一起加油！'); return; }
+  if(!confirm('全家用 '+r.cost+' 分兑换「'+r.name+'」？')) return;
+  D.familySpent=(D.familySpent||0)+r.cost;
+  D.redemptions.push({date:fmt(new Date()), who:'全家', reward:r.name, cost:r.cost, type:'family'});
+  save(); celebrate('🎉'); toast('太棒了，全家兑换成功！'); renderAll();
+}
+function addReward(type){
+  const name=prompt('奖励名称：'); if(!name) return;
+  const cost=parseInt(prompt('需要多少分？','20'))||20;
+  D.rewards[type].push({name,cost}); save(); renderReward();
+}
+function editReward(type,i){
+  const r=D.rewards[type][i];
+  const name=prompt('奖励名称：',r.name); if(!name) return;
+  const cost=parseInt(prompt('需要多少分？',r.cost))||r.cost;
+  D.rewards[type][i]={name,cost}; save(); renderReward();
+}
+function delReward(type,i){ if(confirm('删除这个奖励？')){ D.rewards[type].splice(i,1); save(); renderReward(); } }
+function addMovie(){
+  const v=document.getElementById('newMovie').value.trim(); if(!v) return;
+  D.movies.push({title:v,watched:false}); save(); renderReward();
+}
+function toggleMovie(i){ D.movies[i].watched=!D.movies[i].watched; save(); renderReward(); }
+function delMovie(i){ D.movies.splice(i,1); save(); renderReward(); }
+
+/* ================= 复盘视图 ================= */
+function renderReview(){
+  const ws=weekStart(viewDate);
+  document.getElementById('reviewFormCard').innerHTML=`
+  <h3 style="margin:0 0 10px">📝 本周复盘（${cnDate(ws)} 起的一周）</h3>
+  <div class="field"><label>🌟 这周全家最棒的事</label><textarea id="rvBest" placeholder="每人说一件，记下来"></textarea></div>
+  <div class="field"><label>🤔 遇到的困难 / 没做到的事</label><textarea id="rvHard" placeholder="不批评，只找原因"></textarea></div>
+  <div class="field"><label>🎯 下周想调整的安排</label><textarea id="rvNext" placeholder="时间、任务、奖励都可以调"></textarea></div>
+  <div class="field"><label>👀 家长看见的进步</label><textarea id="rvSee"></textarea></div>
+  <div class="field"><label>🙋 孩子希望得到的支持</label><textarea id="rvNeed"></textarea></div>
+  <button class="btn btn-p" onclick="saveReview()">保存复盘（全员 +2 分）</button>`;
+  let html='';
+  if(!D.reviews.length) html='<p class="hint">还没有复盘记录。第一次全家复盘，从今晚开始？</p>';
+  D.reviews.slice().reverse().forEach(r=>{
+    html+=`<div class="review-item"><h4>📌 ${r.week} 那一周</h4>
+    ${r.best?`<div>🌟 最棒：${esc(r.best)}</div>`:''}
+    ${r.hard?`<div>🤔 困难：${esc(r.hard)}</div>`:''}
+    ${r.next?`<div>🎯 调整：${esc(r.next)}</div>`:''}
+    ${r.parentSee?`<div>👀 家长看见：${esc(r.parentSee)}</div>`:''}
+    ${r.kidNeed?`<div>🙋 孩子需要：${esc(r.kidNeed)}</div>`:''}</div>`;
+  });
+  document.getElementById('reviewList').innerHTML=html;
+}
+function saveReview(){
+  const g=id=>document.getElementById(id).value.trim();
+  const r={week:weekStart(viewDate), best:g('rvBest'), hard:g('rvHard'), next:g('rvNext'), parentSee:g('rvSee'), kidNeed:g('rvNeed'), ts:Date.now()};
+  if(!r.best&&!r.hard&&!r.next&&!r.parentSee&&!r.kidNeed){ toast('先写点内容再保存哦'); return; }
+  D.reviews.push(r); save(); celebrate('🪞'); toast('复盘已保存，全员 +2 分！'); renderAll();
+}
+
+/* ================= 设置视图 ================= */
+function renderSetting(){
+  // members
+  let html='';
+  D.members.forEach((m,i)=>{
+    html+=`<div class="setting-item">
+      <input style="width:52px;text-align:center" value="${esc(m.emoji)}" onchange="D.members[${i}].emoji=this.value;save();renderAll()">
+      <input style="width:110px" value="${esc(m.name)}" onchange="D.members[${i}].name=this.value;save();renderAll()">
+      <input style="width:130px" value="${esc(m.role)}" onchange="D.members[${i}].role=this.value;save();renderAll()">
+      <input type="color" value="${m.color}" onchange="D.members[${i}].color=this.value;save();renderAll()">
+    </div>`;
+  });
+  html+='<p class="hint">改名字后所有记录自动跟随，不影响积分。</p>';
+  html+=`<label style="font-size:14px;font-weight:700"><input type="checkbox" ${D.sound!==false?'checked':''}
+    onchange="D.sound=this.checked;save();toast(this.checked?'音效已开启':'音效已关闭')"> 🔔 打卡音效</label>`;
+  document.getElementById('memberSetting').innerHTML=html;
+
+  // tasks
+  let html2='';
+  D.members.forEach(m=>{
+    html2+=`<h4 style="margin:10px 0 6px">${m.emoji} ${esc(m.name)}</h4>`;
+    tasksOf(m.id).forEach(t=>{
+      html2+=`<div class="setting-item">
+        <input class="grow" value="${esc(t.title)}" onchange="updTask('${t.id}','title',this.value)">
+        <select onchange="updTask('${t.id}','cat',this.value)">
+          ${Object.keys(CATS).map(k=>`<option value="${k}" ${t.cat===k?'selected':''}>${CATS[k].e}${CATS[k].n}</option>`).join('')}
+        </select>
+        <input type="number" style="width:60px" min="1" max="5" value="${t.pts}" onchange="updTask('${t.id}','pts',parseInt(this.value)||1)">分
+        <button class="btn btn-danger btn-sm" onclick="delTask('${t.id}')">删</button>
+      </div>`;
+    });
+    html2+=`<button class="btn btn-g btn-sm" onclick="addTask('${m.id}')">＋ 给${esc(m.name)}加任务</button>`;
+  });
+  document.getElementById('taskSetting').innerHTML=html2;
+
+  // events
+  let html3='';
+  D.events.forEach((e,i)=>{
+    const m=D.members.find(x=>x.id===e.mid)||{name:'?',emoji:''};
+    const desc = e.mode==='dates'
+      ? `指定日期 ${e.dates.length} 天（${e.dates[0]} ~ ${e.dates[e.dates.length-1]}）`
+      : `${e.start} ~ ${e.end} · 周${(e.dows||[]).map(d=>DOW_CN[d]).join('、')}`;
+    html3+=`<div class="setting-item"><b>${m.emoji}${esc(m.name)}</b>
+      <span class="grow">${esc(e.title)} · ${e.time}${e.endTime?'–'+e.endTime:''}<br><span class="log-adjust">${desc}</span></span>
+      <button class="btn btn-danger btn-sm" onclick="delEvent(${i})">删</button></div>`;
+  });
+  html3+=`
+  <h4 style="margin:12px 0 6px">＋ 添加课程 / 固定日程</h4>
+  <div class="row">
+    <select id="evMid">${D.members.map(m=>`<option value="${m.id}">${m.emoji}${esc(m.name)}</option>`).join('')}</select>
+    <input id="evTitle" placeholder="名称，如：钢琴课" class="grow">
+  </div>
+  <div class="row" style="margin-top:6px">
+    开始 <input type="time" id="evTime" value="16:00">
+    结束 <input type="time" id="evEnd" value="17:00">
+  </div>
+  <div class="row" style="margin-top:6px">
+    从 <input type="date" id="evStart"> 到 <input type="date" id="evEndDate">
+  </div>
+  <div class="row" style="margin-top:6px" id="evDows">
+    重复：${[1,2,3,4,5,6,0].map(d=>`<label style="font-size:13px"><input type="checkbox" value="${d}" ${d>=1&&d<=5?'checked':''}>周${DOW_CN[d]}</label>`).join('')}
+  </div>
+  <button class="btn btn-p btn-sm" style="margin-top:8px" onclick="addEvent()">添加日程</button>
+  <p class="hint">只有一天的日程：开始和结束选同一天即可。</p>`;
+  document.getElementById('eventSetting').innerHTML=html3;
+}
+function updTask(tid,k,v){ const t=D.tasks.find(x=>x.id===tid); t[k]=v; save(); }
+function delTask(tid){ if(confirm('删除这个任务？历史打卡分也会一起去掉。')){ D.tasks=D.tasks.filter(t=>t.id!==tid); save(); renderAll(); } }
+function addTask(mid){
+  const title=prompt('任务名称：'); if(!title) return;
+  const pts=parseInt(prompt('分值（1-5）：','1'))||1;
+  D.tasks.push({id:'t'+Date.now(), mid, title, pts, cat:'study'}); save(); renderAll();
+}
+function delEvent(i){ if(confirm('删除这个日程？')){ D.events.splice(i,1); save(); renderAll(); } }
+function addEvent(){
+  const mid=document.getElementById('evMid').value;
+  const title=document.getElementById('evTitle').value.trim();
+  const time=document.getElementById('evTime').value;
+  const endTime=document.getElementById('evEnd').value;
+  const start=document.getElementById('evStart').value;
+  const end=document.getElementById('evEndDate').value;
+  const dows=[...document.querySelectorAll('#evDows input:checked')].map(x=>parseInt(x.value));
+  if(!title||!start||!end||!time){ toast('请填写名称、时间和起止日期'); return; }
+  D.events.push({id:'e'+Date.now(), mid, title, mode:'range', time, endTime, start, end, dows});
+  save(); toast('日程已添加'); renderAll();
+}
+
+/* ================= 备份 ================= */
+function exportData(){
+  const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='全家时间银行备份_'+fmt(new Date())+'.json';
+  a.click();
+  toast('备份已导出');
+}
+function importData(inp){
+  const f=inp.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{ try{
+    D=Object.assign(JSON.parse(JSON.stringify(DEFAULT_DATA)), JSON.parse(rd.result));
+    save(); toast('导入成功'); renderAll();
+  }catch(e){ toast('文件格式不对'); } };
+  rd.readAsText(f);
+  inp.value='';
+}
+function resetAll(){
+  if(prompt('输入「清空」两个字确认删除全部数据：')==='清空'){
+    localStorage.removeItem(LS_KEY); D=load(); renderAll(); toast('已清空');
+  }
+}
+
+/* ================= 渲染入口 ================= */
+function renderAll(){
+  document.getElementById('datePick').value=viewDate;
+  renderBoard(); renderToday(); renderWeek(); renderRank(); renderReward(); renderReview(); renderSetting();
+}
+goToday();
+</script>
+</body>
+</html>
