@@ -10,83 +10,100 @@
 <title>全家时间银行</title>
 <style>
 :root{
-  --ink:#2b3a4a; --muted:#7b8a99; --bg:#f4f7fb;
-  --c1:#4c88b8; --c2:#ef8f72; --c3:#2f947f; --c4:#b07cc6;
-  --gold:#e7ac2c; --paper:#ffffff;
-  --shadow:0 8px 24px rgba(43,58,74,.10);
-  --radius:14px;
-  --font:"PingFang SC","Microsoft YaHei",sans-serif;
+  --ink:#33405c; --muted:#8a94ab; --bg:#f6f4ee;
+  --c1:#5b8def; --c2:#ff9f43; --c3:#2ec4b6; --c4:#c56cf0;
+  --gold:#f5a623; --coral:#ff7a59; --paper:#ffffff;
+  --grad:linear-gradient(135deg,#ffb020,#ff7a59);
+  --shadow:0 10px 30px rgba(51,64,92,.10);
+  --soft:0 4px 16px rgba(51,64,92,.07);
+  --radius:20px;
+  --font:"PingFang SC","Microsoft YaHei",-apple-system,sans-serif;
 }
 *{box-sizing:border-box} html{scroll-behavior:smooth}
 body{margin:0;font-family:var(--font);color:var(--ink);background:
-  radial-gradient(circle at 10% 5%, rgba(76,136,184,.10), transparent 20rem),
-  radial-gradient(circle at 90% 10%, rgba(231,172,44,.12), transparent 18rem),
-  var(--bg); min-height:100vh; padding-bottom:90px;}
-button{font:inherit;border:0;cursor:pointer;background:none}
-input,select,textarea{font:inherit;border:1px solid #d7dfe8;border-radius:8px;padding:8px 10px;background:#fff;color:var(--ink)}
-input:focus,select:focus,textarea:focus{outline:2px solid var(--c1);border-color:transparent}
+  radial-gradient(circle at 12% 0%, rgba(255,176,32,.16), transparent 24rem),
+  radial-gradient(circle at 95% 8%, rgba(46,196,182,.15), transparent 22rem),
+  radial-gradient(circle at 50% 100%, rgba(91,141,239,.10), transparent 28rem),
+  var(--bg); min-height:100vh; padding-bottom:104px;}
+button{font:inherit;border:0;cursor:pointer;background:none;color:inherit}
+input,select,textarea{font:inherit;border:1.5px solid #e2e6ef;border-radius:10px;padding:8px 10px;background:#fff;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:2px solid rgba(255,159,67,.45);border-color:#ffc79a}
 
 .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:12px;
-  padding:12px 18px;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);
-  border-bottom:1px solid #e3eaf2;box-shadow:0 2px 12px rgba(43,58,74,.06)}
-.logo{font-size:26px}
-.title{font-weight:800;font-size:19px}
+  padding:12px 20px;background:rgba(255,255,255,.86);backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(51,64,92,.06);box-shadow:0 4px 20px rgba(51,64,92,.05)}
+.logo{width:42px;height:42px;border-radius:14px;background:var(--grad);display:grid;place-items:center;
+  font-size:22px;box-shadow:0 4px 12px rgba(255,122,89,.35)}
+.title{font-weight:900;font-size:19px;letter-spacing:.5px}
 .subtitle{font-size:12px;color:var(--muted)}
 .datebox{margin-left:auto;display:flex;align-items:center;gap:8px}
-.datebox input{padding:6px 8px}
-.datebox .today-btn{background:var(--c1);color:#fff;border-radius:8px;padding:6px 12px;font-size:13px}
+.datebox input{padding:6px 8px;border-radius:10px}
+.datebox .today-btn{background:var(--grad);color:#fff;border-radius:10px;padding:7px 14px;font-size:13px;
+  font-weight:800;box-shadow:0 4px 10px rgba(255,122,89,.3)}
 
-.tabs{position:fixed;bottom:0;left:0;right:0;z-index:30;display:flex;background:#fff;
-  border-top:1px solid #e3eaf2;box-shadow:0 -4px 16px rgba(43,58,74,.08)}
-.tabs button{flex:1;padding:9px 2px 10px;display:flex;flex-direction:column;align-items:center;gap:2px;
-  font-size:11px;color:var(--muted)}
-.tabs button .ico{font-size:21px}
-.tabs button.on{color:var(--c1);font-weight:700}
+.tabs{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);z-index:30;display:flex;gap:2px;
+  background:rgba(255,255,255,.95);backdrop-filter:blur(14px);border-radius:24px;padding:6px;
+  box-shadow:0 12px 32px rgba(51,64,92,.20);border:1px solid rgba(51,64,92,.05);max-width:97vw;overflow-x:auto}
+.tabs button{padding:7px 13px;display:flex;flex-direction:column;align-items:center;gap:1px;
+  font-size:10.5px;font-weight:700;color:var(--muted);border-radius:17px;transition:.18s;white-space:nowrap}
+.tabs button .ico{font-size:20px}
+.tabs button.on{color:#fff;background:var(--grad);box-shadow:0 4px 12px rgba(255,122,89,.35)}
 
-.page{max-width:1060px;margin:0 auto;padding:18px 14px}
+.page{max-width:1080px;margin:0 auto;padding:20px 14px}
 .hidden{display:none!important}
-h2{font-size:20px;margin:6px 0 4px}
-.hint{color:var(--muted);font-size:13px;margin:0 0 14px}
-.card{background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:16px}
+h2{font-size:21px;margin:6px 0 4px;font-weight:900}
+.hint{color:var(--muted);font-size:13px;margin:0 0 14px;line-height:1.6}
+.card{background:var(--paper);border-radius:var(--radius);box-shadow:var(--soft);
+  border:1px solid rgba(51,64,92,.05);padding:18px;margin-bottom:16px}
 .chip{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .grow{flex:1}
-.btn{border-radius:10px;padding:9px 16px;font-weight:700;font-size:14px}
-.btn-p{background:var(--c1);color:#fff}
-.btn-g{background:#eef3f8;color:var(--ink)}
-.btn-danger{background:#fdecec;color:#c0392b}
-.btn-sm{padding:5px 10px;font-size:12px;border-radius:8px}
+.btn{border-radius:12px;padding:9px 16px;font-weight:800;font-size:14px;transition:.15s}
+.btn:active{transform:scale(.96)}
+.btn-p{background:var(--grad);color:#fff;box-shadow:0 4px 12px rgba(255,122,89,.3)}
+.btn-g{background:#eef1f7;color:var(--ink)}
+.btn-danger{background:#ffe9e6;color:#d64533}
+.btn-sm{padding:5px 11px;font-size:12px;border-radius:9px}
+.ava{border-radius:50%;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;
+  background:color-mix(in srgb,var(--mc,#5b8def) 16%,#fff);flex:none;
+  box-shadow:inset 0 0 0 2.5px #fff,0 2px 8px rgba(51,64,92,.14)}
+.ava svg{width:100%;height:100%;display:block}
 
 /* member cards on today page */
 .member-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
-.mcard{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;border-top:5px solid var(--mc,#4c88b8)}
-.mhead{display:flex;align-items:center;gap:10px;padding:12px 14px 8px}
-.mavatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-size:24px;background:color-mix(in srgb,var(--mc) 15%, #fff)}
-.mname{font-weight:800;font-size:17px}
+.mcard{background:#fff;border-radius:var(--radius);box-shadow:var(--soft);border:1px solid rgba(51,64,92,.05);
+  overflow:hidden;position:relative}
+.mcard::before{content:"";position:absolute;inset:0 0 auto 0;height:6px;
+  background:linear-gradient(90deg,var(--mc),color-mix(in srgb,var(--mc) 40%,#fff))}
+.mhead{display:flex;align-items:center;gap:12px;padding:16px 14px 8px}
+.mname{font-weight:900;font-size:17px}
 .mrole{font-size:12px;color:var(--muted)}
-.mpts{margin-left:auto;text-align:right}
+.mpts{margin-left:auto;text-align:center;background:color-mix(in srgb,var(--mc) 10%,#fff);
+  border-radius:14px;padding:6px 14px}
 .mpts b{font-size:20px;color:var(--mc)}
-.mpts span{font-size:11px;color:var(--muted);display:block}
-.evt{display:flex;align-items:center;gap:8px;margin:0 12px 6px;padding:8px 10px;border-radius:10px;
-  background:#f2f7fb;border-left:4px solid var(--mc);font-size:13px}
+.mpts span{font-size:10.5px;color:var(--muted);display:block}
+.evt{display:flex;align-items:center;gap:8px;margin:0 12px 6px;padding:8px 12px;border-radius:12px;
+  background:color-mix(in srgb,var(--mc) 7%,#fff);border-left:4px solid var(--mc);font-size:13px;font-weight:600}
 .evt .t{font-weight:800;white-space:nowrap}
 .tasklist{padding:6px 12px 12px}
-.task{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;margin-bottom:6px;
-  background:#fafbfd;border:1px solid #eef2f6;transition:.15s}
+.task{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;margin-bottom:7px;
+  background:#f8f9fc;border:1.5px solid #eef1f7;transition:.15s;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 .task:active{transform:scale(.985)}
-.task .box{width:26px;height:26px;border-radius:8px;border:2px solid #c6d2dd;display:grid;place-items:center;
-  font-size:16px;color:#fff;flex:none}
-.task.done{background:#effaf3;border-color:#cdeeda}
-.task.done .box{background:#3bb273;border-color:#3bb273}
-.task.done .tt{text-decoration:line-through;color:#8aa093}
-.task .tt{font-size:14px;flex:1}
-.task .pt{font-size:12px;font-weight:800;color:var(--gold);white-space:nowrap}
-.task .cat{font-size:14px}
-.bonus{margin:2px 12px 10px;padding:7px 10px;border-radius:10px;font-size:12.5px;background:#fff8e6;color:#946b00}
-.bonus.got{background:#effaf3;color:#1e7a4f}
+.task .box{width:26px;height:26px;border-radius:9px;border:2px solid #ccd5e2;display:grid;place-items:center;
+  font-size:15px;color:#fff;flex:none;background:#fff}
+.task.done{background:linear-gradient(135deg,#e9faf0,#dcf5e7);border-color:#b9e8cd}
+.task.done .box{background:#34c77b;border-color:#34c77b}
+.task.done .tt{text-decoration:line-through;color:#7fa78f}
+.task .tt{font-size:14px;flex:1;line-height:1.4}
+.task .pt{font-size:12.5px;font-weight:900;color:var(--gold);white-space:nowrap}
+.task .cat{font-size:15px}
+.bonus{margin:2px 12px 12px;padding:8px 12px;border-radius:12px;font-size:12.5px;font-weight:600;
+  background:#fff6e0;color:#9a7014}
+.bonus.got{background:linear-gradient(90deg,#e9faf0,#d3f3e2);color:#1e7a4f}
 
-.progressbar{height:10px;border-radius:999px;background:#e8eef4;overflow:hidden;margin:6px 0}
-.progressbar>div{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--c3),var(--gold));transition:.3s}
+.progressbar{height:10px;border-radius:999px;background:#edf0f6;overflow:hidden;margin:6px 0}
+.progressbar>div{height:100%;border-radius:999px;background:linear-gradient(90deg,#2ec4b6,#ffb020);transition:.4s}
 
 /* week view */
 .wk-table{width:100%;border-collapse:collapse;font-size:12.5px}
@@ -100,77 +117,95 @@ h2{font-size:20px;margin:6px 0 4px}
 .tmpl-table th{background:#f2f7fb}
 
 /* rank */
-.rankrow{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;margin-bottom:8px;background:#fafbfd;border:1px solid #eef2f6}
-.rankrow .medal{font-size:26px;width:34px;text-align:center}
+.rankrow{display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:16px;margin-bottom:9px;
+  background:#f8f9fc;border:1.5px solid #eef1f7}
+.rankrow .medal{font-size:29px;width:36px;text-align:center}
 .rankrow .bar{flex:1}
-.rankrow .score{font-size:20px;font-weight:800}
-.streak{font-size:12px;color:var(--muted)}
+.rankrow .score{font-size:22px;font-weight:900}
+.streak{font-size:12px;color:var(--muted);font-weight:600}
 .statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
-.stat{background:#f2f7fb;border-radius:12px;padding:12px;text-align:center}
-.stat b{font-size:22px;display:block}
+.stat{background:linear-gradient(160deg,#f4f7ff,#eef6f3);border-radius:16px;padding:14px;text-align:center;
+  border:1px solid rgba(51,64,92,.05)}
+.stat b{font-size:24px;display:block;font-weight:900}
 .stat span{font-size:12px;color:var(--muted)}
 
 /* rewards */
-.reward{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid #eef2f6;background:#fafbfd;margin-bottom:8px}
-.reward .cost{font-weight:800;color:var(--gold);white-space:nowrap}
-.movie{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:#fafbfd;border:1px solid #eef2f6;margin-bottom:6px;font-size:14px}
+.reward{display:flex;align-items:center;gap:10px;padding:11px 13px;border-radius:14px;border:1.5px solid #eef1f7;background:#f8f9fc;margin-bottom:8px}
+.reward .cost{font-weight:900;color:var(--gold);white-space:nowrap}
+.movie{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:12px;background:#f8f9fc;border:1.5px solid #eef1f7;margin-bottom:6px;font-size:14px}
 .movie.watched{opacity:.55}
 .movie.watched .mt{text-decoration:line-through}
 
-.review-item{border-left:4px solid var(--c3);background:#fafbfd;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:13.5px}
+.review-item{border-left:4px solid var(--c3);background:#f8f9fc;border-radius:12px;padding:11px 13px;margin-bottom:10px;font-size:13.5px;line-height:1.7}
 .review-item h4{margin:0 0 6px;font-size:14px}
 .field{margin-bottom:10px}
 .field label{display:block;font-size:13px;font-weight:700;margin-bottom:4px}
 .field input,.field textarea,.field select{width:100%}
 textarea{min-height:56px;resize:vertical}
 
-.setting-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;background:#fafbfd;border:1px solid #eef2f6;margin-bottom:6px;font-size:13.5px;flex-wrap:wrap}
+.setting-item{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:12px;background:#f8f9fc;border:1.5px solid #eef1f7;margin-bottom:6px;font-size:13.5px;flex-wrap:wrap}
 details{margin-bottom:12px}
 summary{cursor:pointer;font-weight:800;font-size:15px;padding:6px 0}
 .log-adjust{font-size:12px;color:var(--muted)}
 
-.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#2b3a4a;color:#fff;
-  padding:10px 20px;border-radius:999px;font-size:14px;z-index:99;opacity:0;pointer-events:none;transition:.3s}
+.toast{position:fixed;left:50%;bottom:104px;transform:translateX(-50%);background:linear-gradient(135deg,#3a466b,#33405c);color:#fff;
+  padding:11px 22px;border-radius:999px;font-size:14px;font-weight:700;z-index:99;opacity:0;pointer-events:none;transition:.3s;
+  box-shadow:0 8px 24px rgba(51,64,92,.35)}
 .toast.show{opacity:1}
 .celebrate{position:fixed;inset:0;pointer-events:none;z-index:98;display:grid;place-items:center;font-size:80px;opacity:0;transition:.4s}
 .celebrate.show{opacity:1}
 
 /* ===== 看板模式（iPad 横屏） ===== */
-#page-board{max-width:1400px;padding:12px 12px}
+#page-board{max-width:1500px;padding:12px 12px}
 .board-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:12px}
-.board-head .bdate{font-size:22px;font-weight:800}
+.board-head .bdate{font-size:23px;font-weight:900}
 .board-star{margin-left:auto;display:flex;align-items:center;gap:8px;background:#fff;border-radius:999px;
-  padding:8px 18px;box-shadow:var(--shadow);font-weight:800;font-size:16px}
+  padding:9px 20px;box-shadow:var(--soft);border:1px solid rgba(51,64,92,.05);font-weight:800;font-size:15px}
 .board-star .pool{color:var(--gold)}
-.board-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
-.bcol{background:#fff;border-radius:18px;box-shadow:var(--shadow);overflow:hidden;
-  border-top:8px solid var(--mc,#4c88b8);display:flex;flex-direction:column}
-.bcol-head{display:flex;align-items:center;gap:10px;padding:12px 14px 6px}
-.bcol-head .bava{font-size:38px}
-.bcol-head .bname{font-weight:800;font-size:19px;line-height:1.2}
-.bcol-head .bsub{font-size:12px;color:var(--muted)}
+.board-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:14px}
+.bcol{background:#fff;border-radius:22px;box-shadow:var(--soft);border:1px solid rgba(51,64,92,.05);
+  overflow:hidden;display:flex;flex-direction:column;position:relative}
+.bcol::before{content:"";position:absolute;inset:0 0 auto 0;height:7px;
+  background:linear-gradient(90deg,var(--mc),color-mix(in srgb,var(--mc) 40%,#fff))}
+.bcol-head{display:flex;align-items:center;gap:10px;padding:17px 14px 6px}
+.bcol-head .bname{font-weight:900;font-size:19px;line-height:1.2}
+.bcol-head .bsub{font-size:11.5px;color:var(--muted);font-weight:600}
 .bcol-head .bpts{margin-left:auto;text-align:center;background:color-mix(in srgb,var(--mc) 12%, #fff);
-  border-radius:14px;padding:4px 12px}
+  border-radius:16px;padding:5px 13px}
 .bcol-head .bpts b{font-size:26px;color:var(--mc);display:block;line-height:1.1}
 .bcol-head .bpts span{font-size:10.5px;color:var(--muted)}
-.bevt{margin:4px 12px 2px;padding:7px 10px;border-radius:10px;background:#f2f7fb;
+.bevt{margin:4px 12px 2px;padding:8px 12px;border-radius:12px;background:color-mix(in srgb,var(--mc) 7%,#fff);
   border-left:4px solid var(--mc);font-size:13px;font-weight:700}
 .btasks{padding:8px 10px 12px;display:flex;flex-direction:column;gap:8px}
-.btask{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;min-height:58px;
-  background:#f6f8fb;border:2px solid #e8eef4;font-size:15px;font-weight:600;
+.btask{display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;min-height:58px;
+  background:#f8f9fc;border:2px solid #eef1f7;font-size:15px;font-weight:700;
   transition:.12s;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;cursor:pointer}
-.btask:active{transform:scale(.96)}
-.btask .bico{font-size:26px;flex:none}
-.btask .btt{flex:1;line-height:1.3}
-.btask .bpt{font-size:14px;font-weight:800;color:var(--gold);white-space:nowrap}
-.btask.done{background:#e6f7ec;border-color:#7fd6a4}
-.btask.done .btt{color:#4c9a6f;text-decoration:line-through}
-.btask.done .bpt{color:#3bb273}
-.btask .bchk{width:30px;height:30px;border-radius:50%;border:2.5px solid #c6d2dd;flex:none;
+.btask:active{transform:scale(.95)}
+.btask .bico{font-size:25px;flex:none}
+.btask .btt{flex:1;line-height:1.35}
+.btask .bpt{font-size:14px;font-weight:900;color:var(--gold);white-space:nowrap}
+.btask.done{background:linear-gradient(135deg,#e9faf0,#d9f4e6);border-color:#a9e3c4}
+.btask.done .btt{color:#5d9c78;text-decoration:line-through}
+.btask.done .bpt{color:#34c77b}
+.btask .bchk{width:32px;height:32px;border-radius:50%;border:2.5px solid #ccd5e2;flex:none;background:#fff;
   display:grid;place-items:center;color:#fff;font-size:17px;font-weight:900}
-.btask.done .bchk{background:#3bb273;border-color:#3bb273}
-.ball-done{margin:0 10px 12px;padding:10px;border-radius:14px;text-align:center;font-weight:800;
+.btask.done .bchk{background:#34c77b;border-color:#34c77b}
+.ball-done{margin:0 10px 12px;padding:10px;border-radius:14px;text-align:center;font-weight:900;
   background:linear-gradient(90deg,#ffe9a8,#ffd166);color:#7a5800;font-size:15px}
+/* 时间计划标签 */
+.due{display:inline-flex;align-items:center;gap:2px;font-size:11.5px;font-weight:800;color:#4c88b8;
+  background:#e8f1f9;border-radius:999px;padding:1.5px 8px;white-space:nowrap}
+.due.over{color:#c0392b;background:#fdecec;animation:duepulse 1.2s infinite}
+@keyframes duepulse{50%{opacity:.55}}
+.task.late,.btask.late{background:#fff4e8;border-color:#f4c78a}
+.task.late .tt,.btask.late .btt{color:#a86a1f;text-decoration:line-through}
+.task.late .box,.btask.late .bchk{background:#e8963e;border-color:#e8963e}
+.latebadge{font-size:10.5px;font-weight:800;color:#a86a1f;background:#ffe9cf;border-radius:999px;padding:1px 7px;white-space:nowrap}
+.goodbadge{font-size:10.5px;font-weight:800;color:#1e7a4f;background:#d9f3e4;border-radius:999px;padding:1px 7px;white-space:nowrap}
+.cheatbadge{font-size:10.5px;font-weight:800;color:#c0392b;background:#fdecec;border-radius:999px;padding:1px 7px;white-space:nowrap}
+.task.cheat,.btask.cheat{background:#fdecec!important;border-color:#f0b6b6!important}
+.task.cheat .tt,.btask.cheat .btt{color:#c0392b}
+.task.cheat .box,.btask.cheat .bchk{background:#e05b4b;border-color:#e05b4b}
 .fly-star{position:fixed;z-index:97;font-size:26px;pointer-events:none;animation:flyup 1s ease-out forwards}
 @keyframes flyup{
   0%{transform:translate(0,0) scale(1);opacity:1}
@@ -212,9 +247,10 @@ summary{cursor:pointer;font-weight:800;font-size:15px;padding:6px 0}
 
   <section class="page hidden" id="page-today">
     <h2 id="todayTitle">今日打卡</h2>
-    <p class="hint" id="todayHint">点击任务即可完成打卡；再点一次可取消。当天的课程会自动列出。</p>
+    <p class="hint" id="todayHint">任务按时间计划排序：⏰ 时间前完成得全分，延期完成得分减半（有 10 分钟宽限，隔天补卡也算延期）。点击打卡，再点取消。</p>
     <div class="card" id="familyDayCard"></div>
     <div class="member-grid" id="memberGrid"></div>
+    <div class="card no-print" id="auditCard"></div>
   </section>
 
   <section class="page hidden" id="page-week">
@@ -261,6 +297,7 @@ summary{cursor:pointer;font-weight:800;font-size:15px;padding:6px 0}
   <section class="page hidden" id="page-setting">
     <h2>设置</h2>
     <p class="hint">成员、任务、课程、奖励都可以修改，让工具跟着学期和假期一直用下去。</p>
+    <div class="card"><details open><summary>🔒 家长密码</summary><div id="pinSetting"></div></details></div>
     <div class="card"><details open><summary>👨‍👩‍👧‍👦 家庭成员</summary><div id="memberSetting"></div></details></div>
     <div class="card"><details><summary>✅ 日常任务管理</summary><div id="taskSetting"></div></details></div>
     <div class="card"><details><summary>📅 课程 / 固定日程管理</summary><div id="eventSetting"></div></details></div>
@@ -295,43 +332,44 @@ const LS_KEY = 'familyTimeBank_v1';
 
 const DEFAULT_DATA = {
   members: [
-    {id:'m1', name:'大宝', role:'初二学生', emoji:'🧑‍🎓', color:'#4c88b8'},
-    {id:'m2', name:'小宝', role:'幼儿园大班', emoji:'🧒', color:'#ef8f72'},
-    {id:'m3', name:'爸爸', role:'家长', emoji:'👨', color:'#2f947f'},
-    {id:'m4', name:'妈妈', role:'家长', emoji:'👩', color:'#b07cc6'}
+    {id:'m1', name:'大宝', role:'初二学生', emoji:'🧑‍🎓', color:'#5b8def'},
+    {id:'m2', name:'小宝', role:'幼儿园大班', emoji:'🧒', color:'#ff9f43'},
+    {id:'m3', name:'爸爸', role:'家长', emoji:'👨', color:'#2ec4b6'},
+    {id:'m4', name:'妈妈', role:'家长', emoji:'👩', color:'#c56cf0'}
   ],
   // cat: study 学习 / sport 运动 / self 自律 / family 家庭
+  // due: 截止时间（可选）。按时完成得全分，延期完成得分减半（最低1分）
   tasks: [
     // 大宝（初二）
-    {id:'t1',  mid:'m1', title:'按时开始上午第一项学习（9点前）', pts:1, cat:'self'},
-    {id:'t2',  mid:'m1', title:'英语：暑假作业 + 背10个单词', pts:2, cat:'study'},
-    {id:'t3',  mid:'m1', title:'数学：暑假作业 / 补习班复习', pts:2, cat:'study'},
-    {id:'t4',  mid:'m1', title:'科学：暑假作业 / 预习', pts:2, cat:'study'},
-    {id:'t5',  mid:'m1', title:'语文 / 社会：暑假作业（轮流安排）', pts:2, cat:'study'},
-    {id:'t6',  mid:'m1', title:'课外阅读 30 分钟', pts:1, cat:'study'},
-    {id:'t7',  mid:'m1', title:'运动 40 分钟（羽毛球 / 跑步）', pts:2, cat:'sport'},
+    {id:'t1',  mid:'m1', title:'按时开始上午第一项学习', pts:1, cat:'self',  due:'09:00'},
+    {id:'t2',  mid:'m1', title:'英语：暑假作业 + 背10个单词', pts:2, cat:'study', due:'12:00'},
+    {id:'t3',  mid:'m1', title:'数学：暑假作业 / 补习班复习', pts:2, cat:'study', due:'12:00'},
+    {id:'t4',  mid:'m1', title:'科学：暑假作业 / 预习', pts:2, cat:'study', due:'15:30'},
+    {id:'t5',  mid:'m1', title:'语文 / 社会：暑假作业（轮流安排）', pts:2, cat:'study', due:'12:00'},
+    {id:'t6',  mid:'m1', title:'课外阅读 30 分钟', pts:1, cat:'study', due:'20:00'},
+    {id:'t7',  mid:'m1', title:'运动 40 分钟（羽毛球 / 跑步）', pts:2, cat:'sport', due:'20:00'},
     {id:'t8',  mid:'m1', title:'今日课程全部按时上课不迟到', pts:1, cat:'self'},
-    {id:'t9',  mid:'m1', title:'屏幕娱乐 ≤ 约定时间', pts:2, cat:'self'},
-    {id:'t10', mid:'m1', title:'睡前自己排好明天的计划', pts:1, cat:'self'},
+    {id:'t9',  mid:'m1', title:'屏幕娱乐 ≤ 约定时间', pts:2, cat:'self', due:'22:00'},
+    {id:'t10', mid:'m1', title:'睡前自己排好明天的计划', pts:1, cat:'self', due:'22:30'},
     {id:'t11', mid:'m1', title:'帮家里做一件家务', pts:1, cat:'family'},
     // 小宝（大班）
-    {id:'t20', mid:'m2', title:'按时起床、自己穿衣洗漱', pts:1, cat:'self'},
-    {id:'t21', mid:'m2', title:'象棋课准时出门、认真上课', pts:2, cat:'study'},
-    {id:'t22', mid:'m2', title:'亲子共读绘本 20 分钟', pts:1, cat:'study'},
-    {id:'t23', mid:'m2', title:'启蒙小任务 15 分钟（数数 / 写数字 / 认字）', pts:1, cat:'study'},
-    {id:'t24', mid:'m2', title:'户外活动 1 小时', pts:2, cat:'sport'},
-    {id:'t25', mid:'m2', title:'自己收拾玩具和小书桌', pts:1, cat:'self'},
-    {id:'t26', mid:'m2', title:'看动画不超过约定集数', pts:2, cat:'self'},
+    {id:'t20', mid:'m2', title:'按时起床、自己穿衣洗漱', pts:1, cat:'self', due:'08:30'},
+    {id:'t21', mid:'m2', title:'象棋课准时出门、认真上课', pts:2, cat:'study', due:'10:00'},
+    {id:'t23', mid:'m2', title:'启蒙小任务 15 分钟（数数 / 写数字 / 认字）', pts:1, cat:'study', due:'16:00'},
+    {id:'t24', mid:'m2', title:'户外活动 1 小时', pts:2, cat:'sport', due:'18:00'},
+    {id:'t25', mid:'m2', title:'自己收拾玩具和小书桌', pts:1, cat:'self', due:'20:00'},
+    {id:'t22', mid:'m2', title:'亲子共读绘本 20 分钟', pts:1, cat:'study', due:'20:45'},
+    {id:'t26', mid:'m2', title:'看动画不超过约定集数', pts:2, cat:'self', due:'21:00'},
+    {id:'t28', mid:'m2', title:'按时上床睡觉', pts:1, cat:'self', due:'21:00'},
     {id:'t27', mid:'m2', title:'帮爸爸妈妈做一件小事', pts:1, cat:'family'},
-    {id:'t28', mid:'m2', title:'按时上床睡觉（21:00 前）', pts:1, cat:'self'},
     // 爸爸
-    {id:'t30', mid:'m3', title:'20:00 后专心陪孩子 30 分钟以上', pts:2, cat:'family'},
+    {id:'t30', mid:'m3', title:'20:00 后专心陪孩子 30 分钟以上', pts:2, cat:'family', due:'21:30'},
     {id:'t31', mid:'m3', title:'检查 / 关心孩子今天的学习', pts:1, cat:'family'},
     {id:'t32', mid:'m3', title:'自己运动打卡（任意 20 分钟）', pts:2, cat:'sport'},
     {id:'t33', mid:'m3', title:'陪伴时间不刷手机', pts:2, cat:'self'},
     {id:'t34', mid:'m3', title:'给家人一句具体的表扬', pts:1, cat:'family'},
     // 妈妈
-    {id:'t40', mid:'m4', title:'20:00 后专心陪孩子 30 分钟以上', pts:2, cat:'family'},
+    {id:'t40', mid:'m4', title:'20:00 后专心陪孩子 30 分钟以上', pts:2, cat:'family', due:'21:30'},
     {id:'t41', mid:'m4', title:'检查 / 关心孩子今天的学习', pts:1, cat:'family'},
     {id:'t42', mid:'m4', title:'自己运动打卡（任意 20 分钟）', pts:2, cat:'sport'},
     {id:'t43', mid:'m4', title:'陪伴时间不刷手机', pts:2, cat:'self'},
@@ -372,6 +410,8 @@ const DEFAULT_DATA = {
     ]
   },
   sound: true,
+  pin: null,    // 家长密码（设置后奖励/设置/复核需输入）
+  audit: {},    // 家长复核 {'YYYY-MM-DD':{taskId:'good'|'cheat'}}
   movies: [
     {title:'寻梦环游记', watched:false},
     {title:'疯狂动物城', watched:false},
@@ -385,7 +425,17 @@ let D = load();
 function load(){
   try{
     const raw = localStorage.getItem(LS_KEY);
-    if(raw){ const d = JSON.parse(raw); return Object.assign(JSON.parse(JSON.stringify(DEFAULT_DATA)), d); }
+    if(raw){
+      const d = Object.assign(JSON.parse(JSON.stringify(DEFAULT_DATA)), JSON.parse(raw));
+      // 迁移：老数据的任务补上默认截止时间
+      d.tasks.forEach(t=>{
+        if(t.due===undefined){
+          const dt = DEFAULT_DATA.tasks.find(x=>x.id===t.id);
+          if(dt && dt.due) t.due = dt.due;
+        }
+      });
+      return d;
+    }
   }catch(e){}
   return JSON.parse(JSON.stringify(DEFAULT_DATA));
 }
@@ -413,19 +463,51 @@ function eventsOn(dateStr){
     return dateStr>=e.start && dateStr<=e.end && (e.dows||[]).includes(wd);
   }).sort((a,b)=>a.time.localeCompare(b.time));
 }
-function tasksOf(mid){ return D.tasks.filter(t=>t.mid===mid); }
+function tasksOf(mid){
+  return D.tasks.filter(t=>t.mid===mid)
+    .slice().sort((a,b)=>(a.due||'99:99').localeCompare(b.due||'99:99'));
+}
 function dayLog(dateStr){ return D.log[dateStr] || {}; }
 function isDone(dateStr,tid){ return !!dayLog(dateStr)[tid]; }
+/* 守时判定：打卡记录 rec = {d:打卡日期, t:'HH:MM'}（老数据 true 视为按时）
+   延期 = 超过截止时间 10 分钟宽限，或隔天补卡。延期得分 = ceil(全分/2)，最低 1 分 */
+const GRACE_MIN = 10;
+function addMin(hm,n){
+  let [h,m]=hm.split(':').map(Number); m+=n; h+=Math.floor(m/60); m=((m%60)+60)%60;
+  if(h>23) return '23:59'; // 不跨天，最晚 23:59
+  return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+}
+function isLate(t,rec,dateStr){
+  if(!t.due || !rec || rec===true) return false;
+  if(rec.d>dateStr) return true;
+  return rec.t > addMin(t.due,GRACE_MIN);
+}
+function dueOver(t,rec){ // 未完成且已过点（仅当天视图）：红色提醒
+  if(!t.due || rec) return false;
+  const now=new Date();
+  if(viewDate!==fmt(now)) return viewDate<fmt(now);
+  const cur=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  return cur>addMin(t.due,GRACE_MIN);
+}
+function auditOf(dateStr,tid){ return (D.audit[dateStr]||{})[tid]; }
+function earnedPts(t,rec,dateStr){
+  if(!rec) return 0;
+  const a=auditOf(dateStr,t.id);
+  if(a==='cheat') return -1; // 复核未通过：取消得分并倒扣 1 分
+  let p = isLate(t,rec,dateStr) ? Math.max(1,Math.ceil(t.pts/2)) : t.pts;
+  if(a==='good') p+=1;       // 质量优秀：额外 +1
+  return p;
+}
 function memberDayPts(mid,dateStr){
   const lg = dayLog(dateStr); let p=0;
-  tasksOf(mid).forEach(t=>{ if(lg[t.id]) p+=t.pts; });
+  tasksOf(mid).forEach(t=>{ p+=earnedPts(t,lg[t.id],dateStr); });
   if(allDone(mid,dateStr)) p+=2; // 全勤奖
   return p;
 }
 function allDone(mid,dateStr){
   const ts = tasksOf(mid); if(!ts.length) return false;
   const lg = dayLog(dateStr);
-  return ts.every(t=>lg[t.id]);
+  return ts.every(t=>lg[t.id] && auditOf(dateStr,t.id)!=='cheat'); // 复核未过不算全勤
 }
 function familyStarDay(dateStr){ // 全家达标日：每人当天 ≥5 分
   return D.members.every(m=>memberDayPts(m.id,dateStr)>=5);
@@ -455,6 +537,62 @@ function streak(mid){
   if(memberDayPts(mid,d)===0) d=addDays(d,-1); // 今天还没打卡不打断连续
   while(memberDayPts(mid,d)>0){ s++; d=addDays(d,-1); }
   return s;
+}
+
+/* ================= 卡通头像（按全家福手绘） ================= */
+const AVATARS = {
+  // 大宝：厚刘海 + 白色 Polo 校服（藏青绿领）
+  m1: '<svg viewBox="0 0 120 120">'+
+      '<path d="M18 124c3-27 20-37 42-37s39 10 42 37z" fill="#ffffff"/>'+
+      '<path d="M18 124c3-27 20-37 42-37s39 10 42 37" fill="none" stroke="#dfe5ee" stroke-width="2"/>'+
+      '<path d="M46 90l14 12 14-12" fill="none" stroke="#2b3a55" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>'+
+      '<rect x="51" y="72" width="18" height="18" rx="8" fill="#efbe8f"/>'+
+      '<circle cx="34" cy="56" r="5" fill="#f6ca9c"/><circle cx="86" cy="56" r="5" fill="#f6ca9c"/>'+
+      '<ellipse cx="60" cy="54" rx="25" ry="28" fill="#f6ca9c"/>'+
+      '<path d="M34 57C32 26 45 18 60 18s28 8 26 39l-5-8-6 7-6-8-6 7-6-7-6 8-6-7-6 8z" fill="#26262c"/>'+
+      '<circle cx="50" cy="59" r="2.7" fill="#26262c"/><circle cx="70" cy="59" r="2.7" fill="#26262c"/>'+
+      '<path d="M45 53h8M67 53h8" stroke="#26262c" stroke-width="2" stroke-linecap="round"/>'+
+      '<path d="M54 70q6 4 12 0" stroke="#c2755c" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>',
+  // 小宝：小刺猬头 + 白 T（绿边蓝领）
+  m2: '<svg viewBox="0 0 120 120">'+
+      '<path d="M18 124c3-25 19-35 42-35s39 10 42 35z" fill="#ffffff"/>'+
+      '<path d="M18 124c3-25 19-35 42-35s39 10 42 35" fill="none" stroke="#bfe3cc" stroke-width="3"/>'+
+      '<path d="M43 92a17 9 0 0 0 34 0" fill="none" stroke="#4caf6e" stroke-width="4"/>'+
+      '<path d="M46 90a14 7 0 0 0 28 0" fill="none" stroke="#3d6bd8" stroke-width="5"/>'+
+      '<rect x="52" y="72" width="16" height="16" rx="7" fill="#f1be90"/>'+
+      '<circle cx="35" cy="59" r="5" fill="#f8d3a8"/><circle cx="85" cy="59" r="5" fill="#f8d3a8"/>'+
+      '<ellipse cx="60" cy="58" rx="25" ry="26" fill="#f8d3a8"/>'+
+      '<path d="M33 52Q60 42 87 52L84 34l-6 8-6-14-6 11-5-15-5 15-6-11-6 14-6-8z" fill="#1f1f24"/>'+
+      '<circle cx="50" cy="62" r="3.1" fill="#1f1f24"/><circle cx="70" cy="62" r="3.1" fill="#1f1f24"/>'+
+      '<circle cx="44" cy="68" r="4" fill="#ffab8f" opacity=".45"/><circle cx="76" cy="68" r="4" fill="#ffab8f" opacity=".45"/>'+
+      '<path d="M56 72q4 3 8 0" stroke="#c2755c" stroke-width="2.3" fill="none" stroke-linecap="round"/></svg>',
+  // 爸爸：利落短发 + 卡其 T 恤
+  m3: '<svg viewBox="0 0 120 120">'+
+      '<path d="M18 124c3-27 20-37 42-37s39 10 42 37z" fill="#d8c79e"/>'+
+      '<rect x="51" y="72" width="18" height="18" rx="8" fill="#e8b583"/>'+
+      '<circle cx="32" cy="56" r="5.5" fill="#f2c094"/><circle cx="88" cy="56" r="5.5" fill="#f2c094"/>'+
+      '<ellipse cx="60" cy="54" rx="27" ry="28" fill="#f2c094"/>'+
+      '<path d="M33 54C31 26 44 19 60 19s29 7 27 35c-4-9-12-13-27-13s-23 4-27 13z" fill="#33333a"/>'+
+      '<circle cx="50" cy="57" r="2.7" fill="#33333a"/><circle cx="70" cy="57" r="2.7" fill="#33333a"/>'+
+      '<path d="M44 51h9M67 51h9" stroke="#33333a" stroke-width="2.2" stroke-linecap="round"/>'+
+      '<path d="M53 68q7 5 14 0" stroke="#c2755c" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>',
+  // 妈妈：中分束发 + 灰 T（深蓝领口）
+  m4: '<svg viewBox="0 0 120 120">'+
+      '<ellipse cx="60" cy="50" rx="31" ry="32" fill="#332d3a"/>'+
+      '<path d="M18 124c3-26 19-36 42-36s39 10 42 36z" fill="#9ba6b2"/>'+
+      '<path d="M44 91a16 8 0 0 0 32 0" fill="none" stroke="#2b3a55" stroke-width="5"/>'+
+      '<rect x="51" y="71" width="18" height="18" rx="8" fill="#e8b583"/>'+
+      '<circle cx="34" cy="57" r="5" fill="#f2c094"/><circle cx="86" cy="57" r="5" fill="#f2c094"/>'+
+      '<ellipse cx="60" cy="55" rx="25" ry="27" fill="#f2c094"/>'+
+      '<path d="M60 21c-16 0-27 12-26 35 3-15 12-23 24-24l2-7 2 7c12 1 21 9 24 24 1-23-10-35-26-35z" fill="#332d3a"/>'+
+      '<circle cx="50" cy="58" r="2.5" fill="#33333a"/><circle cx="70" cy="58" r="2.5" fill="#33333a"/>'+
+      '<path d="M45 52h8M67 52h8" stroke="#33333a" stroke-width="2" stroke-linecap="round"/>'+
+      '<path d="M54 69q6 4 12 0" stroke="#c2755c" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>'
+};
+function avatarHTML(m,px){
+  const svg=AVATARS[m.id];
+  return '<span class="ava" style="width:'+px+'px;height:'+px+'px;--mc:'+m.color+'">'+
+    (svg || '<span style="font-size:'+Math.round(px*.55)+'px">'+m.emoji+'</span>')+'</span>';
 }
 
 /* ================= 音效 ================= */
@@ -495,14 +633,40 @@ function celebrate(emo){
 }
 function esc(s){ return String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch])); }
 
+/* ===== 家长密码 ===== */
+let pinUntil = 0;
+function pinOK(){ return Date.now() < pinUntil; }
+function requirePin(cb){
+  if(!D.pin){
+    const p1 = prompt('首次使用：请设置家长密码（建议 4 位数字，孩子不知道的）');
+    if(!p1) return;
+    const p2 = prompt('再输入一次确认：');
+    if(p1!==p2){ toast('两次输入不一致，请重试'); return; }
+    D.pin = p1; save();
+    pinUntil = Date.now()+5*60*1000;
+    toast('家长密码已设置（5 分钟内免重复输入）');
+    cb(); return;
+  }
+  if(pinOK()){ cb(); return; }
+  const p = prompt('请输入家长密码：');
+  if(p===null) return;
+  if(p===D.pin){ pinUntil = Date.now()+5*60*1000; cb(); }
+  else toast('密码不对哦');
+}
+function lockNow(){ pinUntil = 0; renderAll(); toast('已锁定'); }
+
 document.querySelectorAll('.tabs button').forEach(b=>{
   b.onclick=()=>{
-    document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on');
-    document.querySelectorAll('main .page').forEach(p=>p.classList.add('hidden'));
-    document.getElementById('page-'+b.dataset.page).classList.remove('hidden');
-    renderAll();
-    window.scrollTo(0,0);
+    const go=()=>{
+      document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      document.querySelectorAll('main .page').forEach(p=>p.classList.add('hidden'));
+      document.getElementById('page-'+b.dataset.page).classList.remove('hidden');
+      renderAll();
+      window.scrollTo(0,0);
+    };
+    if((b.dataset.page==='reward'||b.dataset.page==='setting') && D.pin && !pinOK()){ requirePin(go); return; }
+    go();
   };
 });
 document.getElementById('datePick').onchange=e=>{ viewDate=e.target.value||fmt(new Date()); renderAll(); };
@@ -520,7 +684,7 @@ function renderToday(){
     const doneCnt=ts.filter(t=>lg[t.id]).length;
     const pts=memberDayPts(m.id,viewDate);
     let html=`<div class="mhead">
-      <div class="mavatar">${m.emoji}</div>
+      ${avatarHTML(m,50)}
       <div><div class="mname">${esc(m.name)}</div><div class="mrole">${esc(m.role)}</div></div>
       <div class="mpts"><b>+${pts}</b><span>今日得分 · 总分 ${totalPts(m.id)}</span></div>
     </div>`;
@@ -530,12 +694,16 @@ function renderToday(){
     html+=`<div style="margin:4px 14px"><div class="progressbar"><div style="width:${ts.length?Math.round(doneCnt/ts.length*100):0}%"></div></div></div>`;
     html+=`<div class="tasklist">`;
     ts.forEach(t=>{
-      const done=!!lg[t.id]; const c=CATS[t.cat]||CATS.study;
-      html+=`<div class="task ${done?'done':''}" onclick="toggleTask('${t.id}',event)">
-        <div class="box">${done?'✓':''}</div>
+      const rec=lg[t.id]; const done=!!rec; const c=CATS[t.cat]||CATS.study;
+      const late=isLate(t,rec,viewDate); const got=earnedPts(t,rec,viewDate);
+      const au=auditOf(viewDate,t.id);
+      html+=`<div class="task ${done?(late?'done late':'done'):''} ${au==='cheat'?'cheat':''}" onclick="toggleTask('${t.id}',event)">
+        <div class="box">${done?(au==='cheat'?'✗':'✓'):''}</div>
         <span class="cat" title="${c.n}">${c.e}</span>
-        <span class="tt">${esc(t.title)}</span>
-        <span class="pt">+${t.pts}</span>
+        <span class="tt">${esc(t.title)}${t.due?` <span class="due ${dueOver(t,rec)?'over':''}">⏰${t.due}前</span>`:''}
+          ${late?' <span class="latebadge">🕐延期 得一半</span>':''}
+          ${au==='good'?' <span class="goodbadge">🌟质检优秀+1</span>':''}${au==='cheat'?' <span class="cheatbadge">❌复核未过 -1</span>':''}</span>
+        <span class="pt">${done?(got>=0?'+'+got:got):'+'+t.pts}</span>
       </div>`;
     });
     html+=`</div>`;
@@ -560,9 +728,16 @@ function toggleTask(tid, ev){
   const t = D.tasks.find(x=>x.id===tid);
   const m = D.members.find(x=>x.id===t.mid);
   const wasFamily = familyStarDay(viewDate);
-  if(lg[tid]){ delete lg[tid]; }
+  if(lg[tid]){
+    delete lg[tid];
+    if(D.audit[viewDate]) delete D.audit[viewDate][tid]; // 取消打卡时同时清除复核标记
+  }
   else{
-    lg[tid]=true;
+    const now = new Date();
+    const rec = {d:fmt(now), t:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')};
+    lg[tid]=rec;
+    const late = isLate(t,rec,viewDate);
+    const got = earnedPts(t,rec,viewDate);
     const x = ev ? (ev.clientX||innerWidth/2) : innerWidth/2;
     const y = ev ? (ev.clientY||innerHeight/2) : innerHeight/2;
     if(!wasFamily && familyStarDay(viewDate)){
@@ -571,9 +746,12 @@ function toggleTask(tid, ev){
     } else if(allDone(t.mid,viewDate)){
       celebrate('🌟'); playFanfare(); flyStars(x,y,'🌟',6);
       toast(m.name+' 今日全勤！+2 全勤奖');
+    } else if(late){
+      playDing(); flyStars(x,y,'🕐',2);
+      toast('延期完成 +'+got+' 分（按时可得 '+t.pts+' 分）');
     } else {
       playDing(); flyStars(x,y,'⭐',3);
-      toast('+'+t.pts+' 分 · '+m.name);
+      toast((t.due?'按时完成！':'')+'+'+got+' 分 · '+m.name);
     }
   }
   save(); renderAll();
@@ -593,19 +771,23 @@ function renderBoard(){
     const lg=dayLog(viewDate); const ts=tasksOf(m.id);
     const evts=eventsOn(viewDate).filter(e=>e.mid===m.id);
     let html=`<div class="bcol-head">
-      <div class="bava">${m.emoji}</div>
+      ${avatarHTML(m,52)}
       <div><div class="bname">${esc(m.name)}</div><div class="bsub">🔥 ${streak(m.id)} 天 · 总分 ${totalPts(m.id)}</div></div>
       <div class="bpts"><b>${memberDayPts(m.id,viewDate)}</b><span>今日</span></div>
     </div>`;
     evts.forEach(e=>{ html+=`<div class="bevt">🕐 ${e.time} ${esc(e.title)}</div>`; });
     html+='<div class="btasks">';
     ts.forEach(t=>{
-      const done=!!lg[t.id]; const c=CATS[t.cat]||CATS.study;
-      html+=`<div class="btask ${done?'done':''}" onclick="toggleTask('${t.id}',event)">
+      const rec=lg[t.id]; const done=!!rec; const c=CATS[t.cat]||CATS.study;
+      const late=isLate(t,rec,viewDate); const got=earnedPts(t,rec,viewDate);
+      const au=auditOf(viewDate,t.id);
+      html+=`<div class="btask ${done?(late?'done late':'done'):''} ${au==='cheat'?'cheat':''}" onclick="toggleTask('${t.id}',event)">
         <span class="bico">${c.e}</span>
-        <span class="btt">${esc(t.title)}</span>
-        <span class="bpt">+${t.pts}</span>
-        <span class="bchk">${done?'✓':''}</span>
+        <span class="btt">${esc(t.title)}${t.due?` <span class="due ${dueOver(t,rec)?'over':''}">⏰${t.due}前</span>`:''}
+          ${late?' <span class="latebadge">🕐延期 得一半</span>':''}
+          ${au==='good'?' <span class="goodbadge">🌟质检优秀+1</span>':''}${au==='cheat'?' <span class="cheatbadge">❌复核未过 -1</span>':''}</span>
+        <span class="bpt">${done?(got>=0?'+'+got:got):'+'+t.pts}</span>
+        <span class="bchk">${done?(au==='cheat'?'✗':'✓'):''}</span>
       </div>`;
     });
     html+='</div>';
@@ -613,6 +795,49 @@ function renderBoard(){
     col.innerHTML=html;
     grid.appendChild(col);
   });
+}
+
+/* ================= 家长复核 ================= */
+function renderAudit(){
+  const el=document.getElementById('auditCard');
+  if(!pinOK()){
+    el.innerHTML=`<h3 style="margin:0 0 6px">🔍 家长复核</h3>
+    <p class="hint">每天检查孩子的打卡是否真实：虚假打卡会取消得分并倒扣 1 分；完成质量高可额外 +1 分。</p>
+    <button class="btn btn-p" onclick="requirePin(renderAll)">🔓 解锁复核（家长密码）</button>`;
+    return;
+  }
+  let html=`<div class="row" style="justify-content:space-between">
+    <h3 style="margin:0">🔍 家长复核 · ${cnDate(viewDate)}</h3>
+    <button class="btn btn-g btn-sm" onclick="lockNow()">🔒 锁定</button></div>
+  <p class="hint">通过 = 正常计分；🌟优秀 = 额外 +1；❌未完成 = 取消得分并倒扣 1 分（也不算全勤）。再点一次可撤销。</p>`;
+  let any=false;
+  D.members.forEach(m=>{
+    const lg=dayLog(viewDate);
+    const done=tasksOf(m.id).filter(t=>lg[t.id]);
+    if(!done.length) return;
+    any=true;
+    html+=`<h4 style="margin:10px 0 6px">${m.emoji} ${esc(m.name)}（复核后今日 ${memberDayPts(m.id,viewDate)} 分）</h4>`;
+    done.forEach(t=>{
+      const a=auditOf(viewDate,t.id); const rec=lg[t.id];
+      html+=`<div class="setting-item">
+        <span class="grow">${esc(t.title)}
+          <span class="log-adjust">${rec&&rec.t?('打卡 '+rec.t):''}${isLate(t,rec,viewDate)?' · 延期':''}</span></span>
+        <button class="btn btn-sm ${!a?'btn-p':'btn-g'}" onclick="setAudit('${t.id}',null)">通过</button>
+        <button class="btn btn-sm ${a==='good'?'btn-p':'btn-g'}" onclick="setAudit('${t.id}','${'good'}')">🌟优秀+1</button>
+        <button class="btn btn-sm ${a==='cheat'?'btn-danger':'btn-g'}" onclick="setAudit('${t.id}','${'cheat'}')">❌未完成</button>
+      </div>`;
+    });
+  });
+  if(!any) html+='<p class="hint">这一天还没有已打卡的任务。</p>';
+  el.innerHTML=html;
+}
+function setAudit(tid,val){
+  const a=D.audit[viewDate]||(D.audit[viewDate]={});
+  const cur=a[tid];
+  if(val===null || cur===val) delete a[tid]; else a[tid]=val;
+  save(); renderAll();
+  if(val==='cheat'&&cur!=='cheat') toast('已标记未真实完成：取消得分并扣 1 分');
+  else if(val==='good'&&cur!=='good') toast('质量优秀，额外 +1 分！');
 }
 
 /* ================= 周计划视图 ================= */
@@ -693,7 +918,7 @@ function renderRank(){
   rows.forEach((r,i)=>{
     html+=`<div class="rankrow">
       <div class="medal">${medals[i]||'🎖'}</div>
-      <div style="font-size:22px">${r.m.emoji}</div>
+      ${avatarHTML(r.m,44)}
       <div class="bar">
         <div style="font-weight:800">${esc(r.m.name)} <span class="streak">🔥 连续打卡 ${r.st} 天 · 累计 ${r.tot} 分</span></div>
         <div class="progressbar"><div style="width:${Math.round(r.wk/max*100)}%;background:${r.m.color}"></div></div>
@@ -839,6 +1064,16 @@ function saveReview(){
 
 /* ================= 设置视图 ================= */
 function renderSetting(){
+  // pin
+  document.getElementById('pinSetting').innerHTML = `
+    <p class="hint">${D.pin
+      ? '✅ 已开启密码保护：打开「奖励」「设置」和「家长复核」需要输入家长密码（输入一次后 5 分钟内有效）。'
+      : '⚠️ 尚未设置密码。设置后，「奖励」「设置」菜单和「家长复核」都需要家长密码才能打开，防止小朋友自己改分、兑奖。'}</p>
+    <div class="row">
+      <button class="btn btn-p btn-sm" onclick="changePin()">${D.pin?'修改密码':'设置密码'}</button>
+      ${D.pin?'<button class="btn btn-danger btn-sm" onclick="clearPin()">关闭密码保护</button>':''}
+    </div>
+    <p class="hint" style="margin-top:8px">提示：请记牢密码。若忘记：导出备份 → 用记事本打开备份文件，把 "pin" 后面的内容改成 null → 重新导入即可解除。</p>`;
   // members
   let html='';
   D.members.forEach((m,i)=>{
@@ -864,6 +1099,7 @@ function renderSetting(){
         <select onchange="updTask('${t.id}','cat',this.value)">
           ${Object.keys(CATS).map(k=>`<option value="${k}" ${t.cat===k?'selected':''}>${CATS[k].e}${CATS[k].n}</option>`).join('')}
         </select>
+        ⏰<input type="time" value="${t.due||''}" title="截止时间，留空=不限时" onchange="updTask('${t.id}','due',this.value)">
         <input type="number" style="width:60px" min="1" max="5" value="${t.pts}" onchange="updTask('${t.id}','pts',parseInt(this.value)||1)">分
         <button class="btn btn-danger btn-sm" onclick="delTask('${t.id}')">删</button>
       </div>`;
@@ -903,12 +1139,26 @@ function renderSetting(){
   <p class="hint">只有一天的日程：开始和结束选同一天即可。</p>`;
   document.getElementById('eventSetting').innerHTML=html3;
 }
-function updTask(tid,k,v){ const t=D.tasks.find(x=>x.id===tid); t[k]=v; save(); }
+function updTask(tid,k,v){
+  const t=D.tasks.find(x=>x.id===tid);
+  if(k==='due' && !v) delete t.due; else t[k]=v;
+  save(); renderBoard(); renderToday();
+}
 function delTask(tid){ if(confirm('删除这个任务？历史打卡分也会一起去掉。')){ D.tasks=D.tasks.filter(t=>t.id!==tid); save(); renderAll(); } }
 function addTask(mid){
   const title=prompt('任务名称：'); if(!title) return;
   const pts=parseInt(prompt('分值（1-5）：','1'))||1;
   D.tasks.push({id:'t'+Date.now(), mid, title, pts, cat:'study'}); save(); renderAll();
+}
+function changePin(){
+  if(D.pin){ const old=prompt('先输入当前密码：'); if(old!==D.pin){ if(old!==null) toast('密码不对'); return; } }
+  const p1=prompt('输入新密码：'); if(!p1) return;
+  const p2=prompt('再输入一次确认：'); if(p1!==p2){ toast('两次不一致'); return; }
+  D.pin=p1; save(); renderSetting(); toast('密码已更新');
+}
+function clearPin(){
+  const old=prompt('输入当前密码以关闭保护：'); if(old!==D.pin){ if(old!==null) toast('密码不对'); return; }
+  D.pin=null; pinUntil=0; save(); renderAll(); toast('已关闭密码保护');
 }
 function delEvent(i){ if(confirm('删除这个日程？')){ D.events.splice(i,1); save(); renderAll(); } }
 function addEvent(){
@@ -952,7 +1202,7 @@ function resetAll(){
 /* ================= 渲染入口 ================= */
 function renderAll(){
   document.getElementById('datePick').value=viewDate;
-  renderBoard(); renderToday(); renderWeek(); renderRank(); renderReward(); renderReview(); renderSetting();
+  renderBoard(); renderToday(); renderAudit(); renderWeek(); renderRank(); renderReward(); renderReview(); renderSetting();
 }
 goToday();
 </script>
