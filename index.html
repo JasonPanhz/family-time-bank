@@ -301,6 +301,7 @@ summary{cursor:pointer;font-weight:800;font-size:15px;padding:6px 0}
     <div class="card"><details open><summary>👨‍👩‍👧‍👦 家庭成员</summary><div id="memberSetting"></div></details></div>
     <div class="card"><details><summary>✅ 日常任务管理</summary><div id="taskSetting"></div></details></div>
     <div class="card"><details><summary>📅 课程 / 固定日程管理</summary><div id="eventSetting"></div></details></div>
+    <div class="card"><details><summary>☁️ 云同步（多设备查看进度）</summary><div id="syncSetting"></div></details></div>
     <div class="card"><details><summary>💾 数据备份</summary>
       <p class="hint">数据保存在本机浏览器中。建议每周导出一次备份文件，防止清理浏览器时丢失。</p>
       <div class="row">
@@ -439,7 +440,11 @@ function load(){
   }catch(e){}
   return JSON.parse(JSON.stringify(DEFAULT_DATA));
 }
-function save(){ localStorage.setItem(LS_KEY, JSON.stringify(D)); }
+function save(){
+  D.updatedAt = Date.now();
+  localStorage.setItem(LS_KEY, JSON.stringify(D));
+  scheduleSync();
+}
 
 /* ================= 日期工具 ================= */
 let viewDate = fmt(new Date());
@@ -1064,6 +1069,29 @@ function saveReview(){
 
 /* ================= 设置视图 ================= */
 function renderSetting(){
+  // cloud sync
+  const sc=syncCfg();
+  document.getElementById('syncSetting').innerHTML=`
+    <p class="hint">用 GitHub 私密 Gist 在多台设备间同步：iPad 打卡后自动上传，电脑打开同一网址自动拉取最新进度（也兼作异地备份）。两台设备填<b>同一个令牌</b>和<b>同一个同步 ID</b> 即可。</p>
+    <div class="field"><label>GitHub 访问令牌（只勾选 gist 权限）</label>
+      <input type="password" id="syTok" value="${esc(sc.token||'')}" placeholder="ghp_ 开头的令牌"></div>
+    <div class="field"><label>同步 ID（首次上传后自动生成；第二台设备填同一个）</label>
+      <input id="syGist" value="${esc(sc.gistId||'')}" placeholder="留空，首次上传自动创建"></div>
+    <label style="font-size:13.5px;font-weight:700"><input type="checkbox" id="syAuto" ${sc.auto!==false?'checked':''}> 打卡后自动上传</label>
+    <div class="row" style="margin-top:10px">
+      <button class="btn btn-p btn-sm" onclick="saveSyncFromUI()">保存配置</button>
+      <button class="btn btn-g btn-sm" onclick="saveSyncFromUI();syncPush(true)">⬆️ 立即上传</button>
+      <button class="btn btn-g btn-sm" onclick="saveSyncFromUI();syncPull(true)">⬇️ 立即拉取</button>
+    </div>
+    <p class="hint" id="syncStatus" style="margin-top:8px">${sc.last?('上次同步：'+new Date(sc.last).toLocaleString()):'尚未同步'}</p>
+    <details><summary style="font-size:13px;font-weight:700">📖 如何生成令牌（一次性，约 3 分钟）</summary>
+    <p class="hint" style="margin-top:6px">
+    1. 电脑登录 github.com → 右上角头像 → Settings<br>
+    2. 左栏最底部 Developer settings → Personal access tokens → Tokens (classic)<br>
+    3. Generate new token (classic)：Note 随意填，Expiration 选 No expiration，权限<b>只勾选 gist</b><br>
+    4. 生成后复制 ghp_ 开头的令牌填到上面（页面只显示一次，请先粘贴保存）<br>
+    5. 在 iPad 上填好令牌 → 点「立即上传」→ 会生成同步 ID；再把令牌和这个 ID 填到电脑上即可<br>
+    ⚠️ 注意：以 iPad 为主要打卡设备，电脑上尽量只查看；两边同时改动时，以后保存的一方为准。</p></details>`;
   // pin
   document.getElementById('pinSetting').innerHTML = `
     <p class="hint">${D.pin
@@ -1199,12 +1227,86 @@ function resetAll(){
   }
 }
 
+/* ================= 云同步（GitHub 私密 Gist） ================= */
+const SYNC_KEY='familyTimeBank_sync';   // 令牌不放进数据备份文件
+const SYNC_FILE='familytimebank.json';
+function syncCfg(){ try{ return JSON.parse(localStorage.getItem(SYNC_KEY))||{}; }catch(e){ return {}; } }
+function saveSyncCfg(c){ localStorage.setItem(SYNC_KEY, JSON.stringify(c)); }
+function ghHeaders(c){ return {'Authorization':'Bearer '+c.token,'Accept':'application/vnd.github+json','Content-Type':'application/json'}; }
+function setSyncStatus(msg){ const el=document.getElementById('syncStatus'); if(el) el.textContent=msg; }
+
+let _syncTimer=null;
+function scheduleSync(){
+  const c=syncCfg();
+  if(!c.token || c.auto===false) return;
+  clearTimeout(_syncTimer);
+  _syncTimer=setTimeout(()=>syncPush(false), 4000);
+}
+async function syncPush(manual){
+  const c=syncCfg();
+  if(!c.token){ if(manual) toast('请先填写并保存 GitHub 令牌'); return; }
+  setSyncStatus('⬆️ 正在上传…');
+  const body=JSON.stringify({description:'全家时间银行数据（自动同步）', public:false,
+    files:{[SYNC_FILE]:{content:JSON.stringify(D)}}});
+  try{
+    const url = c.gistId ? 'https://api.github.com/gists/'+c.gistId : 'https://api.github.com/gists';
+    const r = await fetch(url, {method:c.gistId?'PATCH':'POST', headers:ghHeaders(c), body});
+    if(!r.ok) throw new Error(r.status);
+    const g = await r.json();
+    if(!c.gistId){ c.gistId=g.id; }
+    c.last=Date.now(); saveSyncCfg(c);
+    setSyncStatus('☁️ 已同步到云端 '+new Date().toLocaleTimeString().slice(0,5));
+    if(manual){ toast('已上传到云端'); renderSetting(); }
+  }catch(e){
+    setSyncStatus('❌ 上传失败（网络或令牌问题），打卡数据仍安全存在本机');
+    if(manual) toast('上传失败，请检查网络和令牌');
+  }
+}
+async function syncPull(manual){
+  const c=syncCfg();
+  if(!c.token || !c.gistId){ if(manual) toast('请先填写令牌和同步 ID'); return; }
+  setSyncStatus('⬇️ 正在拉取…');
+  try{
+    const r = await fetch('https://api.github.com/gists/'+c.gistId, {headers:ghHeaders(c)});
+    if(!r.ok) throw new Error(r.status);
+    const g = await r.json();
+    const f = g.files[SYNC_FILE];
+    if(!f) throw new Error('no file');
+    let content=f.content;
+    if(f.truncated){ const r2=await fetch(f.raw_url); content=await r2.text(); }
+    const remote=JSON.parse(content);
+    if((remote.updatedAt||0) > (D.updatedAt||0)){
+      localStorage.setItem(LS_KEY, JSON.stringify(remote));
+      D=load();
+      renderAll();
+      setSyncStatus('☁️ 已拉取云端最新进度');
+      if(manual) toast('已更新为云端最新进度');
+    }else{
+      setSyncStatus('☁️ 本机已是最新');
+      if(manual) toast('本机数据已是最新');
+    }
+    c.last=Date.now(); saveSyncCfg(c);
+  }catch(e){
+    setSyncStatus('❌ 拉取失败（网络、令牌或同步 ID 问题）');
+    if(manual) toast('拉取失败，请检查配置');
+  }
+}
+function saveSyncFromUI(){
+  const c=syncCfg();
+  c.token=document.getElementById('syTok').value.trim();
+  c.gistId=document.getElementById('syGist').value.trim();
+  c.auto=document.getElementById('syAuto').checked;
+  saveSyncCfg(c);
+  toast('云同步配置已保存');
+}
+
 /* ================= 渲染入口 ================= */
 function renderAll(){
   document.getElementById('datePick').value=viewDate;
   renderBoard(); renderToday(); renderAudit(); renderWeek(); renderRank(); renderReward(); renderReview(); renderSetting();
 }
 goToday();
+syncPull(false); // 打开时自动拉取云端最新进度（已配置云同步时）
 </script>
 </body>
 </html>
