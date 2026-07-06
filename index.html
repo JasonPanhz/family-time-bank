@@ -339,16 +339,18 @@ const DEFAULT_DATA = {
     {id:'m4', name:'妈妈', role:'家长', emoji:'👩', color:'#c56cf0'}
   ],
   // cat: study 学习 / sport 运动 / self 自律 / family 家庭
+  ver: 2,
   // due: 截止时间（可选）。按时完成得全分，延期完成得分减半（最低1分）
   tasks: [
-    // 大宝（初二）
+    // 大宝（初二·按学校暑假作业清单定制）
     {id:'t1',  mid:'m1', title:'按时开始上午第一项学习', pts:1, cat:'self',  due:'09:00'},
-    {id:'t2',  mid:'m1', title:'英语：暑假作业 + 背10个单词', pts:2, cat:'study', due:'12:00'},
-    {id:'t3',  mid:'m1', title:'数学：暑假作业 / 补习班复习', pts:2, cat:'study', due:'12:00'},
-    {id:'t4',  mid:'m1', title:'科学：暑假作业 / 预习', pts:2, cat:'study', due:'15:30'},
-    {id:'t5',  mid:'m1', title:'语文 / 社会：暑假作业（轮流安排）', pts:2, cat:'study', due:'12:00'},
-    {id:'t6',  mid:'m1', title:'课外阅读 30 分钟', pts:1, cat:'study', due:'20:00'},
-    {id:'t7',  mid:'m1', title:'运动 40 分钟（羽毛球 / 跑步）', pts:2, cat:'sport', due:'20:00'},
+    {id:'t2',  mid:'m1', title:'英语：背单词+默写（八上U1–U4，错一订三）', pts:2, cat:'study', due:'12:00'},
+    {id:'t3',  mid:'m1', title:'数学：1份练习（7月反思卷/专训一→8月专训二）', pts:2, cat:'study', due:'12:00'},
+    {id:'t12', mid:'m1', title:'英语：跟读朗读15–20分钟+填记录表', pts:1, cat:'study', due:'10:30'},
+    {id:'t4',  mid:'m1', title:'科学：易错专练→八上一二章预习+小练习', pts:2, cat:'study', due:'15:30'},
+    {id:'t5',  mid:'m1', title:'语文：古诗文1首（摘句+赏析感悟）', pts:1, cat:'study', due:'20:00'},
+    {id:'t6',  mid:'m1', title:'名著阅读30分钟（《红星照耀中国》→《红岩》）', pts:1, cat:'study', due:'21:00'},
+    {id:'t7',  mid:'m1', title:'体锻1小时：按周训练表完成+拍照打卡', pts:2, cat:'sport', due:'19:30'},
     {id:'t8',  mid:'m1', title:'今日课程全部按时上课不迟到', pts:1, cat:'self'},
     {id:'t9',  mid:'m1', title:'屏幕娱乐 ≤ 约定时间', pts:2, cat:'self', due:'22:00'},
     {id:'t10', mid:'m1', title:'睡前自己排好明天的计划', pts:1, cat:'self', due:'22:30'},
@@ -390,7 +392,29 @@ const DEFAULT_DATA = {
     {id:'e7', mid:'m1', title:'科学补习班', mode:'range', time:'13:00', endTime:'15:00',
       start:'2026-07-29', end:'2026-08-19', dows:[1,2,3,4,5,6]},
     {id:'e8', mid:'m2', title:'国际象棋课（10:00 出门）', mode:'range', time:'10:15', endTime:'11:45',
-      start:'2026-07-06', end:'2026-07-22', dows:[1,2,3,4,5]}
+      start:'2026-07-06', end:'2026-07-22', dows:[1,2,3,4,5]},
+    // ===== 暑假作业节点（按学校清单排期）=====
+    {id:'n1',  mid:'m1', title:'🧪科学实验①自制土电话（亲子）', mode:'dates', dates:['2026-07-12'], time:'15:30', endTime:'16:30'},
+    {id:'n2',  mid:'m1', title:'🧩社会：中国省级拼图挑战+录视频传钉钉', mode:'dates', dates:['2026-07-18'], time:'10:00', endTime:'11:00'},
+    {id:'n3',  mid:'m1', title:'🧪科学实验②平面镜成像', mode:'dates', dates:['2026-07-19'], time:'15:30', endTime:'16:30'},
+    {id:'n4',  mid:'m1', title:'🗺️社会：八上地理填图（附件一）', mode:'dates', dates:['2026-07-25'], time:'10:00', endTime:'11:00'},
+    {id:'n5',  mid:'m1', title:'🧪科学实验③光的色散', mode:'dates', dates:['2026-07-26'], time:'15:30', endTime:'16:30'},
+    {id:'n6',  mid:'m1', title:'⚠️数学7/31截止：反思卷一二+专训一自查订正', mode:'dates', dates:['2026-07-31'], time:'19:00', endTime:'19:30'},
+    {id:'n7',  mid:'m1', title:'✍️语文：《红星照耀中国》人物小传300字', mode:'dates', dates:['2026-08-01'], time:'10:00', endTime:'11:00'},
+    {id:'n8',  mid:'m1', title:'🧪科学实验④凸透镜成像规律', mode:'dates', dates:['2026-08-02'], time:'15:30', endTime:'16:30'},
+    {id:'n9',  mid:'m1', title:'📜社会：八上历史填空（附件二）', mode:'dates', dates:['2026-08-08'], time:'10:00', endTime:'11:00'},
+    {id:'n10', mid:'m1', title:'🧪科学实验⑤组装简单电路', mode:'dates', dates:['2026-08-09'], time:'15:30', endTime:'16:30'},
+    {id:'n11', mid:'m1', title:'📅社会：1840–1919时间轴绘制+拍照上传', mode:'dates', dates:['2026-08-15'], time:'10:00', endTime:'11:30'},
+    {id:'n12', mid:'m1', title:'🗺️语文：长征图册（路线图+摘录400字）', mode:'dates', dates:['2026-08-16'], time:'10:00', endTime:'11:30'},
+    {id:'n13', mid:'m1', title:'⚠️数学8/21截止：主题专训二自查订正', mode:'dates', dates:['2026-08-21'], time:'19:00', endTime:'19:30'},
+    {id:'n14', mid:'m1', title:'🎭语文：《红岩》剧本一幕设计', mode:'dates', dates:['2026-08-22'], time:'10:00', endTime:'11:30'},
+    {id:'n15', mid:'m1', title:'📐数学项目化：直角三角形实践（亲子测量）', mode:'dates', dates:['2026-08-23'], time:'09:30', endTime:'11:00'},
+    {id:'n16', mid:'m1', title:'📰社会：时事新闻评论2则（附件四）', mode:'dates', dates:['2026-08-24'], time:'10:00', endTime:'11:00'},
+    {id:'n17', mid:'m1', title:'📰语文：收集新闻3则+归纳特点', mode:'dates', dates:['2026-08-25'], time:'10:00', endTime:'11:00'},
+    {id:'n18', mid:'m1', title:'🎬英语：英文日记/小视频传班级圈#Diary Entry#', mode:'dates', dates:['2026-08-26'], time:'10:00', endTime:'11:00'},
+    {id:'n19', mid:'m1', title:'💭语文：《红星》读书感悟500字', mode:'dates', dates:['2026-08-28'], time:'10:00', endTime:'11:00'},
+    {id:'n20', mid:'m1', title:'✅全科作业总检查：批订/装订/该传的都传', mode:'dates', dates:['2026-08-29'], time:'09:00', endTime:'11:00'},
+    {id:'n21', mid:'m1', title:'🌅提早睡觉调作息，准备开学', mode:'dates', dates:['2026-08-30','2026-08-31'], time:'21:30', endTime:'22:00'}
   ],
   log: {},          // {'YYYY-MM-DD': {taskId:true}}
   redemptions: [],  // {date, memberName|'家庭', reward, cost, type:'personal'|'family'}
@@ -427,7 +451,10 @@ function load(){
   try{
     const raw = localStorage.getItem(LS_KEY);
     if(raw){
-      const d = Object.assign(JSON.parse(JSON.stringify(DEFAULT_DATA)), JSON.parse(raw));
+      const saved = JSON.parse(raw);
+      const savedVer = saved.ver || 1;   // 老数据没有 ver 字段，视为 v1
+      const d = Object.assign(JSON.parse(JSON.stringify(DEFAULT_DATA)), saved);
+      d.ver = savedVer;
       // 迁移：老数据的任务补上默认截止时间
       d.tasks.forEach(t=>{
         if(t.due===undefined){
@@ -435,6 +462,18 @@ function load(){
           if(dt && dt.due) t.due = dt.due;
         }
       });
+      // 迁移 v2：大宝任务更新为学校暑假作业清单 + 追加节点日程（保留历史打卡积分）
+      if((d.ver||1) < 2){
+        DEFAULT_DATA.tasks.filter(t=>t.mid==='m1').forEach(dt=>{
+          const t = d.tasks.find(x=>x.id===dt.id);
+          if(t) Object.assign(t, dt);
+          else d.tasks.push(JSON.parse(JSON.stringify(dt)));
+        });
+        DEFAULT_DATA.events.forEach(de=>{
+          if(!d.events.find(x=>x.id===de.id)) d.events.push(JSON.parse(JSON.stringify(de)));
+        });
+        d.ver = 2;
+      }
       return d;
     }
   }catch(e){}
@@ -878,17 +917,18 @@ function renderTmpl(){
       <table class="tmpl-table">
         <tr><th>时间</th><th>安排</th></tr>
         <tr><td>7:30</td><td>起床、早餐</td></tr>
-        <tr><td>8:30–9:10</td><td>英语暑假作业 + 背单词</td></tr>
-        <tr><td>9:20–10:00</td><td>数学暑假作业</td></tr>
-        <tr><td>10:15–11:00</td><td>运动：跑步 / 羽毛球（避开正午）</td></tr>
-        <tr><td>11:10–11:50</td><td>语文 / 社会作业（隔天轮换）</td></tr>
+        <tr><td>8:30–9:20</td><td>英语：背单词 + 默写（错一订三）</td></tr>
+        <tr><td>9:30–10:00</td><td>英语：跟读朗读15–20分钟 + 填记录表</td></tr>
+        <tr><td>10:10–11:00</td><td>数学：反思卷 / 专训 1 份</td></tr>
+        <tr><td>11:10–11:50</td><td>语文：古诗文 1 首（摘句+赏析）</td></tr>
         <tr><td>12:00–13:00</td><td>午饭 + 午休</td></tr>
-        <tr><td>13:00–15:00</td><td>科学班（7/29 起）；无课时：科学作业 + 阅读</td></tr>
-        <tr><td>16:00–18:00</td><td>数学班（课日）；无课时：自由 / 补作业</td></tr>
-        <tr><td>19:00–19:40</td><td>课外阅读 30 分钟</td></tr>
+        <tr><td>13:00–15:00</td><td>科学班（7/29 起）；无课时：科学专练/预习 + 自由</td></tr>
+        <tr><td>16:00–18:00</td><td>数学班（课日）；无课时：周末项目任务 / 自由</td></tr>
+        <tr><td>18:10–19:10</td><td>体锻 1 小时（按周训练表）+ 拍照打卡</td></tr>
+        <tr><td>19:30–20:00</td><td>名著阅读 30 分钟</td></tr>
         <tr><td>20:00–21:00</td><td>亲子时间 / 全家运动</td></tr>
         <tr><td>21:00–22:00</td><td>英语口语网课（按课表）</td></tr>
-        <tr><td>22:30</td><td>睡觉</td></tr>
+        <tr><td>22:00–22:30</td><td>排明日计划、洗漱，22:30 睡觉</td></tr>
       </table>
     </div>
     <div>
