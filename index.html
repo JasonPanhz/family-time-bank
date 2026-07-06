@@ -138,6 +138,20 @@ h2{font-size:21px;margin:6px 0 4px;font-weight:900}
 
 .review-item{border-left:4px solid var(--c3);background:#f8f9fc;border-radius:12px;padding:11px 13px;margin-bottom:10px;font-size:13.5px;line-height:1.7}
 .review-item h4{margin:0 0 6px;font-size:14px}
+
+/* 周总结报告 */
+.rep-table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0 14px}
+.rep-table th,.rep-table td{border:1px solid #e3eaf2;padding:6px 8px;text-align:center}
+.rep-table th{background:#f4f6fb;font-weight:800}
+.rep-table td.name{text-align:left;font-weight:800;white-space:nowrap}
+.rep-star{color:var(--gold);font-weight:900}
+.rep-sec{font-size:14.5px;font-weight:900;margin:14px 0 4px}
+.rep-summary{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0}
+.rep-summary .stat{flex:1;min-width:110px;padding:10px}
+.sign-row{display:flex;gap:50px;margin-top:22px;font-size:13px;color:var(--muted)}
+.sign-row span{border-top:1px solid #c9d2de;padding-top:6px;min-width:140px}
+.print-only{display:none}
+@media print{ .print-only{display:block} }
 .field{margin-bottom:10px}
 .field label{display:block;font-size:13px;font-weight:700;margin-bottom:4px}
 .field input,.field textarea,.field select{width:100%}
@@ -288,10 +302,11 @@ summary{cursor:pointer;font-weight:800;font-size:15px;padding:6px 0}
   </section>
 
   <section class="page hidden" id="page-review">
-    <h2>每周家庭复盘</h2>
-    <p class="hint">建议每周日晚全家 10 分钟：说进步、聊困难、定下周。坚持复盘每人 +2 分。</p>
-    <div class="card" id="reviewFormCard"></div>
-    <div class="card"><h3 style="margin:0 0 10px">📚 复盘记录</h3><div id="reviewList"></div></div>
+    <h2 class="no-print">每周复盘与总结</h2>
+    <p class="hint no-print">每周日晚全家 10 分钟：先看周总结报告，再做复盘。报告可打印存档或贴墙。坚持复盘每人 +2 分。</p>
+    <div class="card" id="weekReportCard"></div>
+    <div class="card no-print" id="reviewFormCard"></div>
+    <div class="card no-print"><h3 style="margin:0 0 10px">📚 复盘记录</h3><div id="reviewList"></div></div>
   </section>
 
   <section class="page hidden" id="page-setting">
@@ -1077,6 +1092,103 @@ function addMovie(){
 function toggleMovie(i){ D.movies[i].watched=!D.movies[i].watched; save(); renderReward(); }
 function delMovie(i){ D.movies.splice(i,1); save(); renderReward(); }
 
+/* ================= 周总结报告 ================= */
+let reportOffset = 0;
+function shiftReport(n){ reportOffset+=n; renderWeekReport(); }
+function weekStats(mid, days){
+  let pts=0, activeDays=0, done=0, onTime=0, timedDone=0, good=0, cheat=0, best={d:null,p:-1};
+  const total = tasksOf(mid).length * days.length;
+  days.forEach(d=>{
+    const p = memberDayPts(mid,d);
+    pts+=p; if(p>0) activeDays++;
+    if(p>best.p){ best={d,p}; }
+    const lg=dayLog(d);
+    tasksOf(mid).forEach(t=>{
+      const rec=lg[t.id]; if(!rec) return;
+      done++;
+      const a=auditOf(d,t.id);
+      if(a==='good') good++; if(a==='cheat') cheat++;
+      if(t.due){ timedDone++; if(!isLate(t,rec,d)) onTime++; }
+    });
+  });
+  return {pts,activeDays,done,total,onTime,timedDone,good,cheat,best};
+}
+function renderWeekReport(){
+  const ws=addDays(weekStart(viewDate), reportOffset*7);
+  const days=[]; for(let i=0;i<7;i++) days.push(addDays(ws,i));
+  const we=days[6];
+  const stats=D.members.map(m=>({m, s:weekStats(m.id,days)}));
+  const champ=stats.slice().sort((a,b)=>b.s.pts-a.s.pts)[0];
+  const famStars=days.filter(d=>familyStarDay(d)).length;
+  const famPts=stats.reduce((s,x)=>s+x.s.pts,0);
+  const redeems=D.redemptions.filter(r=>r.date>=ws&&r.date<=we);
+  const review=D.reviews.slice().reverse().find(r=>r.week===ws);
+
+  let html=`
+  <div class="row no-print" style="justify-content:space-between;margin-bottom:6px">
+    <h3 style="margin:0">📊 家庭周总结</h3>
+    <div>
+      <button class="btn btn-g btn-sm" onclick="shiftReport(-1)">← 上周</button>
+      <button class="btn btn-g btn-sm" onclick="shiftReport(1)">下周 →</button>
+      <button class="btn btn-p btn-sm" onclick="window.print()">🖨 打印周总结</button>
+    </div>
+  </div>
+  <div class="print-only" style="text-align:center;margin-bottom:6px">
+    <div style="font-size:20px;font-weight:900">⏳ 全家时间银行 · 家庭周总结</div>
+  </div>
+  <p class="hint" style="margin:0 0 4px">${cnDate(ws)} — ${cnDate(we)}</p>
+
+  <div class="rep-summary">
+    <div class="stat"><b>${famPts}</b><span>全家总得分</span></div>
+    <div class="stat"><b>${famStars}/7</b><span>全家达标日</span></div>
+    <div class="stat"><b>${champ&&champ.s.pts>0?esc(champ.m.name):'—'}</b><span>本周冠军 🏆</span></div>
+    <div class="stat"><b>${redeems.length}</b><span>本周兑换</span></div>
+  </div>
+
+  <div class="rep-sec">👨‍👩‍👧‍👦 每人小结</div>
+  <table class="rep-table"><tr>
+    <th style="text-align:left">成员</th><th>周得分</th><th>打卡天数</th><th>完成任务</th><th>按时率</th><th>🌟质检优秀</th><th>❌复核未过</th><th>最佳一天</th></tr>`;
+  stats.forEach(({m,s})=>{
+    const rate = s.timedDone ? Math.round(s.onTime/s.timedDone*100)+'%' : '—';
+    html+=`<tr>
+      <td class="name">${m.emoji} ${esc(m.name)}${champ&&champ.m.id===m.id&&s.pts>0?' 🏆':''}</td>
+      <td><b>${s.pts}</b></td><td>${s.activeDays}/7</td><td>${s.done}/${s.total}</td>
+      <td>${rate}</td><td>${s.good||'—'}</td><td>${s.cheat||'—'}</td>
+      <td>${s.best.p>0?(parse(s.best.d).getMonth()+1)+'/'+parse(s.best.d).getDate()+' ('+s.best.p+'分)':'—'}</td></tr>`;
+  });
+  html+=`</table>
+
+  <div class="rep-sec">📅 每日得分（⭐=全家达标日）</div>
+  <table class="rep-table"><tr><th style="text-align:left">成员</th>`;
+  days.forEach(d=>{ html+=`<th>${parse(d).getMonth()+1}/${parse(d).getDate()}<br>周${DOW_CN[dow(d)]}</th>`; });
+  html+='</tr>';
+  D.members.forEach(m=>{
+    html+=`<tr><td class="name">${m.emoji} ${esc(m.name)}</td>`;
+    days.forEach(d=>{ const p=memberDayPts(m.id,d); html+=`<td>${p||'·'}</td>`; });
+    html+='</tr>';
+  });
+  html+=`<tr><td class="name">⭐ 全家达标</td>`;
+  days.forEach(d=>{ html+=`<td class="rep-star">${familyStarDay(d)?'⭐':''}</td>`; });
+  html+='</tr></table>';
+
+  if(redeems.length){
+    html+='<div class="rep-sec">🎁 本周兑换</div>';
+    redeems.forEach(r=>{ html+=`<div style="font-size:13px;margin:2px 0">· ${r.date} ${esc(r.who)} 兑换「${esc(r.reward)}」（${r.cost} 分）</div>`; });
+  }
+  if(review){
+    html+=`<div class="rep-sec">🪞 本周复盘摘要</div><div style="font-size:13px;line-height:1.8">
+      ${review.best?'🌟 最棒：'+esc(review.best)+'<br>':''}
+      ${review.hard?'🤔 困难：'+esc(review.hard)+'<br>':''}
+      ${review.next?'🎯 下周调整：'+esc(review.next)+'<br>':''}
+      ${review.parentSee?'👀 家长看见：'+esc(review.parentSee)+'<br>':''}
+      ${review.kidNeed?'🙋 孩子需要：'+esc(review.kidNeed):''}</div>`;
+  } else {
+    html+='<div class="rep-sec no-print">🪞 本周还没做复盘</div><p class="hint no-print" style="margin:0">在下方填写并保存后，复盘内容会自动出现在打印版里。</p>';
+  }
+  html+=`<div class="sign-row print-only"><span>孩子签名：</span><span>家长签名：</span><span>打印日期：${cnDate(fmt(new Date()))}</span></div>`;
+  document.getElementById('weekReportCard').innerHTML=html;
+}
+
 /* ================= 复盘视图 ================= */
 function renderReview(){
   const ws=weekStart(viewDate);
@@ -1343,7 +1455,7 @@ function saveSyncFromUI(){
 /* ================= 渲染入口 ================= */
 function renderAll(){
   document.getElementById('datePick').value=viewDate;
-  renderBoard(); renderToday(); renderAudit(); renderWeek(); renderRank(); renderReward(); renderReview(); renderSetting();
+  renderBoard(); renderToday(); renderAudit(); renderWeek(); renderRank(); renderReward(); renderWeekReport(); renderReview(); renderSetting();
 }
 goToday();
 syncPull(false); // 打开时自动拉取云端最新进度（已配置云同步时）
