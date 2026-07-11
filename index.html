@@ -85,6 +85,17 @@ h2{font-size:21px;margin:6px 0 4px;font-weight:900}
 .evt{display:flex;align-items:center;gap:8px;margin:0 12px 6px;padding:8px 12px;border-radius:12px;
   background:color-mix(in srgb,var(--mc) 7%,#fff);border-left:4px solid var(--mc);font-size:13px;font-weight:600}
 .evt .t{font-weight:800;white-space:nowrap}
+.evt-click{cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+.evt-click:active{transform:scale(.98)}
+.evchk{width:24px;height:24px;border-radius:50%;border:2px solid #ccd5e2;flex:none;background:#fff;
+  display:grid;place-items:center;color:#fff;font-size:14px;font-weight:900}
+.evt.done{background:linear-gradient(135deg,#e9faf0,#dcf5e7);border-left-color:#34c77b}
+.evt.done .evchk{background:#34c77b;border-color:#34c77b}
+.evt.cheat{background:#fdecec;border-left-color:#e05b4b}
+.evt.cheat .evchk{background:#e05b4b;border-color:#e05b4b}
+.bevt.evt-click{cursor:pointer}
+.bevt.done{background:linear-gradient(135deg,#e9faf0,#dcf5e7);border-left-color:#34c77b}
+.bevt.cheat{background:#fdecec;border-left-color:#e05b4b}
 .tasklist{padding:6px 12px 12px}
 .task{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;margin-bottom:7px;
   background:#f8f9fc;border:1.5px solid #eef1f7;transition:.15s;cursor:pointer;
@@ -354,7 +365,7 @@ const DEFAULT_DATA = {
     {id:'m4', name:'妈妈', role:'家长', emoji:'👩', color:'#c56cf0'}
   ],
   // cat: study 学习 / sport 运动 / self 自律 / family 家庭
-  ver: 2,
+  ver: 3,
   // due: 截止时间（可选）。按时完成得全分，延期完成得分减半（最低1分）
   tasks: [
     // 大宝（初二·按学校暑假作业清单定制）
@@ -395,41 +406,41 @@ const DEFAULT_DATA = {
   ],
   // 固定日程：mode:'dates' 指定日期列表；mode:'range' 起止日期+星期
   events: [
-    {id:'e1', mid:'m1', title:'英语口语网课', mode:'dates', time:'21:30', endTime:'22:00',
+    {id:'e1', pts:2, mid:'m1', title:'英语口语网课', mode:'dates', time:'21:30', endTime:'22:00',
       dates:['2026-07-01','2026-07-03','2026-07-07','2026-07-08','2026-07-10','2026-07-14','2026-07-15']},
-    {id:'e2', mid:'m1', title:'英语口语网课', mode:'dates', time:'20:30', endTime:'21:00', dates:['2026-07-02']},
-    {id:'e3', mid:'m1', title:'英语口语网课', mode:'dates', time:'21:00', endTime:'21:30',
+    {id:'e2', pts:2, mid:'m1', title:'英语口语网课', mode:'dates', time:'20:30', endTime:'21:00', dates:['2026-07-02']},
+    {id:'e3', pts:2, mid:'m1', title:'英语口语网课', mode:'dates', time:'21:00', endTime:'21:30',
       dates:['2026-07-06','2026-07-09','2026-07-13','2026-07-16']},
-    {id:'e4', mid:'m1', title:'英语口语网课', mode:'dates', time:'17:00', endTime:'17:30', dates:['2026-07-05','2026-07-12']},
-    {id:'e5', mid:'m1', title:'英语口语网课', mode:'dates', time:'16:00', endTime:'16:30', dates:['2026-07-11']},
-    {id:'e6', mid:'m1', title:'数学补习班', mode:'dates', time:'16:00', endTime:'18:00',
+    {id:'e4', pts:2, mid:'m1', title:'英语口语网课', mode:'dates', time:'17:00', endTime:'17:30', dates:['2026-07-05','2026-07-12']},
+    {id:'e5', pts:2, mid:'m1', title:'英语口语网课', mode:'dates', time:'16:00', endTime:'16:30', dates:['2026-07-11']},
+    {id:'e6', pts:2, mid:'m1', title:'数学补习班', mode:'dates', time:'16:00', endTime:'18:00',
       dates:['2026-07-13','2026-07-14','2026-07-16','2026-07-18','2026-07-20','2026-07-22','2026-07-23','2026-07-24','2026-07-27','2026-07-29','2026-07-30','2026-07-31']},
-    {id:'e7', mid:'m1', title:'科学补习班', mode:'range', time:'13:00', endTime:'15:00',
+    {id:'e7', pts:2, mid:'m1', title:'科学补习班', mode:'range', time:'13:00', endTime:'15:00',
       start:'2026-07-29', end:'2026-08-19', dows:[1,2,3,4,5,6]},
-    {id:'e8', mid:'m2', title:'国际象棋课（10:00 出门）', mode:'range', time:'10:15', endTime:'11:45',
+    {id:'e8', pts:2, mid:'m2', title:'国际象棋课（10:00 出门）', mode:'range', time:'10:15', endTime:'11:45',
       start:'2026-07-06', end:'2026-07-22', dows:[1,2,3,4,5]},
     // ===== 暑假作业节点（按学校清单排期）=====
-    {id:'n1',  mid:'m1', title:'🧪科学实验①自制土电话（亲子）', mode:'dates', dates:['2026-07-12'], time:'15:30', endTime:'16:30'},
-    {id:'n2',  mid:'m1', title:'🧩社会：中国省级拼图挑战+录视频传钉钉', mode:'dates', dates:['2026-07-18'], time:'10:00', endTime:'11:00'},
-    {id:'n3',  mid:'m1', title:'🧪科学实验②平面镜成像', mode:'dates', dates:['2026-07-19'], time:'15:30', endTime:'16:30'},
-    {id:'n4',  mid:'m1', title:'🗺️社会：八上地理填图（附件一）', mode:'dates', dates:['2026-07-25'], time:'10:00', endTime:'11:00'},
-    {id:'n5',  mid:'m1', title:'🧪科学实验③光的色散', mode:'dates', dates:['2026-07-26'], time:'15:30', endTime:'16:30'},
-    {id:'n6',  mid:'m1', title:'⚠️数学7/31截止：反思卷一二+专训一自查订正', mode:'dates', dates:['2026-07-31'], time:'19:00', endTime:'19:30'},
-    {id:'n7',  mid:'m1', title:'✍️语文：《红星照耀中国》人物小传300字', mode:'dates', dates:['2026-08-01'], time:'10:00', endTime:'11:00'},
-    {id:'n8',  mid:'m1', title:'🧪科学实验④凸透镜成像规律', mode:'dates', dates:['2026-08-02'], time:'15:30', endTime:'16:30'},
-    {id:'n9',  mid:'m1', title:'📜社会：八上历史填空（附件二）', mode:'dates', dates:['2026-08-08'], time:'10:00', endTime:'11:00'},
-    {id:'n10', mid:'m1', title:'🧪科学实验⑤组装简单电路', mode:'dates', dates:['2026-08-09'], time:'15:30', endTime:'16:30'},
-    {id:'n11', mid:'m1', title:'📅社会：1840–1919时间轴绘制+拍照上传', mode:'dates', dates:['2026-08-15'], time:'10:00', endTime:'11:30'},
-    {id:'n12', mid:'m1', title:'🗺️语文：长征图册（路线图+摘录400字）', mode:'dates', dates:['2026-08-16'], time:'10:00', endTime:'11:30'},
-    {id:'n13', mid:'m1', title:'⚠️数学8/21截止：主题专训二自查订正', mode:'dates', dates:['2026-08-21'], time:'19:00', endTime:'19:30'},
-    {id:'n14', mid:'m1', title:'🎭语文：《红岩》剧本一幕设计', mode:'dates', dates:['2026-08-22'], time:'10:00', endTime:'11:30'},
-    {id:'n15', mid:'m1', title:'📐数学项目化：直角三角形实践（亲子测量）', mode:'dates', dates:['2026-08-23'], time:'09:30', endTime:'11:00'},
-    {id:'n16', mid:'m1', title:'📰社会：时事新闻评论2则（附件四）', mode:'dates', dates:['2026-08-24'], time:'10:00', endTime:'11:00'},
-    {id:'n17', mid:'m1', title:'📰语文：收集新闻3则+归纳特点', mode:'dates', dates:['2026-08-25'], time:'10:00', endTime:'11:00'},
-    {id:'n18', mid:'m1', title:'🎬英语：英文日记/小视频传班级圈#Diary Entry#', mode:'dates', dates:['2026-08-26'], time:'10:00', endTime:'11:00'},
-    {id:'n19', mid:'m1', title:'💭语文：《红星》读书感悟500字', mode:'dates', dates:['2026-08-28'], time:'10:00', endTime:'11:00'},
-    {id:'n20', mid:'m1', title:'✅全科作业总检查：批订/装订/该传的都传', mode:'dates', dates:['2026-08-29'], time:'09:00', endTime:'11:00'},
-    {id:'n21', mid:'m1', title:'🌅提早睡觉调作息，准备开学', mode:'dates', dates:['2026-08-30','2026-08-31'], time:'21:30', endTime:'22:00'}
+    {id:'n1', pts:3,  mid:'m1', title:'🧪科学实验①自制土电话（亲子）', mode:'dates', dates:['2026-07-12'], time:'15:30', endTime:'16:30'},
+    {id:'n2', pts:3,  mid:'m1', title:'🧩社会：中国省级拼图挑战+录视频传钉钉', mode:'dates', dates:['2026-07-18'], time:'10:00', endTime:'11:00'},
+    {id:'n3', pts:3,  mid:'m1', title:'🧪科学实验②平面镜成像', mode:'dates', dates:['2026-07-19'], time:'15:30', endTime:'16:30'},
+    {id:'n4', pts:3,  mid:'m1', title:'🗺️社会：八上地理填图（附件一）', mode:'dates', dates:['2026-07-25'], time:'10:00', endTime:'11:00'},
+    {id:'n5', pts:3,  mid:'m1', title:'🧪科学实验③光的色散', mode:'dates', dates:['2026-07-26'], time:'15:30', endTime:'16:30'},
+    {id:'n6', pts:2,  mid:'m1', title:'⚠️数学7/31截止：反思卷一二+专训一自查订正', mode:'dates', dates:['2026-07-31'], time:'19:00', endTime:'19:30'},
+    {id:'n7', pts:3,  mid:'m1', title:'✍️语文：《红星照耀中国》人物小传300字', mode:'dates', dates:['2026-08-01'], time:'10:00', endTime:'11:00'},
+    {id:'n8', pts:3,  mid:'m1', title:'🧪科学实验④凸透镜成像规律', mode:'dates', dates:['2026-08-02'], time:'15:30', endTime:'16:30'},
+    {id:'n9', pts:3,  mid:'m1', title:'📜社会：八上历史填空（附件二）', mode:'dates', dates:['2026-08-08'], time:'10:00', endTime:'11:00'},
+    {id:'n10', pts:3, mid:'m1', title:'🧪科学实验⑤组装简单电路', mode:'dates', dates:['2026-08-09'], time:'15:30', endTime:'16:30'},
+    {id:'n11', pts:3, mid:'m1', title:'📅社会：1840–1919时间轴绘制+拍照上传', mode:'dates', dates:['2026-08-15'], time:'10:00', endTime:'11:30'},
+    {id:'n12', pts:3, mid:'m1', title:'🗺️语文：长征图册（路线图+摘录400字）', mode:'dates', dates:['2026-08-16'], time:'10:00', endTime:'11:30'},
+    {id:'n13', pts:2, mid:'m1', title:'⚠️数学8/21截止：主题专训二自查订正', mode:'dates', dates:['2026-08-21'], time:'19:00', endTime:'19:30'},
+    {id:'n14', pts:3, mid:'m1', title:'🎭语文：《红岩》剧本一幕设计', mode:'dates', dates:['2026-08-22'], time:'10:00', endTime:'11:30'},
+    {id:'n15', pts:3, mid:'m1', title:'📐数学项目化：直角三角形实践（亲子测量）', mode:'dates', dates:['2026-08-23'], time:'09:30', endTime:'11:00'},
+    {id:'n16', pts:3, mid:'m1', title:'📰社会：时事新闻评论2则（附件四）', mode:'dates', dates:['2026-08-24'], time:'10:00', endTime:'11:00'},
+    {id:'n17', pts:3, mid:'m1', title:'📰语文：收集新闻3则+归纳特点', mode:'dates', dates:['2026-08-25'], time:'10:00', endTime:'11:00'},
+    {id:'n18', pts:3, mid:'m1', title:'🎬英语：英文日记/小视频传班级圈#Diary Entry#', mode:'dates', dates:['2026-08-26'], time:'10:00', endTime:'11:00'},
+    {id:'n19', pts:3, mid:'m1', title:'💭语文：《红星》读书感悟500字', mode:'dates', dates:['2026-08-28'], time:'10:00', endTime:'11:00'},
+    {id:'n20', pts:3, mid:'m1', title:'✅全科作业总检查：批订/装订/该传的都传', mode:'dates', dates:['2026-08-29'], time:'09:00', endTime:'11:00'},
+    {id:'n21', pts:1, mid:'m1', title:'🌅提早睡觉调作息，准备开学', mode:'dates', dates:['2026-08-30','2026-08-31'], time:'21:30', endTime:'22:00'}
   ],
   log: {},          // {'YYYY-MM-DD': {taskId:true}}
   redemptions: [],  // {date, memberName|'家庭', reward, cost, type:'personal'|'family'}
@@ -488,6 +499,14 @@ function load(){
           if(!d.events.find(x=>x.id===de.id)) d.events.push(JSON.parse(JSON.stringify(de)));
         });
         d.ver = 2;
+      }
+      // 迁移 v3：课程/节点日程补上默认加分
+      if(d.ver < 3){
+        DEFAULT_DATA.events.forEach(de=>{
+          const e = d.events.find(x=>x.id===de.id);
+          if(e && e.pts===undefined && de.pts) e.pts = de.pts;
+        });
+        d.ver = 3;
       }
       return d;
     }
@@ -557,9 +576,19 @@ function earnedPts(t,rec,dateStr){
   if(a==='good') p+=1;       // 质量优秀：额外 +1
   return p;
 }
+/* 课程/日程打卡：当天打卡得全分，隔天补卡减半；家长复核同样生效 */
+function earnedEvPts(e,rec,dateStr){
+  if(!rec || !e.pts) return 0;
+  const a=auditOf(dateStr,'ev_'+e.id);
+  if(a==='cheat') return -1;
+  let p = (rec!==true && rec.d>dateStr) ? Math.max(1,Math.ceil(e.pts/2)) : e.pts;
+  if(a==='good') p+=1;
+  return p;
+}
 function memberDayPts(mid,dateStr){
   const lg = dayLog(dateStr); let p=0;
   tasksOf(mid).forEach(t=>{ p+=earnedPts(t,lg[t.id],dateStr); });
+  eventsOn(dateStr).forEach(e=>{ if(e.mid===mid && e.pts) p+=earnedEvPts(e,lg['ev_'+e.id],dateStr); });
   if(allDone(mid,dateStr)) p+=2; // 全勤奖
   return p;
 }
@@ -748,7 +777,19 @@ function renderToday(){
       <div class="mpts"><b>+${pts}</b><span>今日得分 · 总分 ${totalPts(m.id)}</span></div>
     </div>`;
     evts.forEach(e=>{
-      html+=`<div class="evt"><span class="t">🕐 ${e.time}${e.endTime?'–'+e.endTime:''}</span><span>${esc(e.title)}</span></div>`;
+      if(e.pts){
+        const rec=lg['ev_'+e.id]; const done=!!rec; const got=earnedEvPts(e,rec,viewDate);
+        const au=auditOf(viewDate,'ev_'+e.id);
+        html+=`<div class="evt evt-click ${done?'done':''} ${au==='cheat'?'cheat':''}" onclick="toggleEvent('${e.id}',event)">
+          <span class="t">🕐 ${e.time}${e.endTime?'–'+e.endTime:''}</span>
+          <span class="grow">${esc(e.title)}
+            ${done&&rec.d>viewDate?' <span class="latebadge">🕐补卡 得一半</span>':''}
+            ${au==='good'?' <span class="goodbadge">🌟优秀+1</span>':''}${au==='cheat'?' <span class="cheatbadge">❌复核未过 -1</span>':''}</span>
+          <span class="pt" style="font-weight:900;color:var(--gold)">${done?(got>=0?'+'+got:got):'+'+e.pts}</span>
+          <span class="evchk">${done?(au==='cheat'?'✗':'✓'):''}</span></div>`;
+      }else{
+        html+=`<div class="evt"><span class="t">🕐 ${e.time}${e.endTime?'–'+e.endTime:''}</span><span>${esc(e.title)}</span></div>`;
+      }
     });
     html+=`<div style="margin:4px 14px"><div class="progressbar"><div style="width:${ts.length?Math.round(doneCnt/ts.length*100):0}%"></div></div></div>`;
     html+=`<div class="tasklist">`;
@@ -815,6 +856,37 @@ function toggleTask(tid, ev){
   }
   save(); renderAll();
 }
+function toggleEvent(eid, ev){
+  const e = D.events.find(x=>x.id===eid);
+  if(!e || !e.pts) return;
+  const lg = D.log[viewDate] || (D.log[viewDate]={});
+  const k = 'ev_'+eid;
+  const m = D.members.find(x=>x.id===e.mid);
+  const wasFamily = familyStarDay(viewDate);
+  if(lg[k]){
+    delete lg[k];
+    if(D.audit[viewDate]) delete D.audit[viewDate][k];
+  }else{
+    const now = new Date();
+    const rec = {d:fmt(now), t:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')};
+    lg[k]=rec;
+    const late = rec.d>viewDate;
+    const got = earnedEvPts(e,rec,viewDate);
+    const x = ev ? (ev.clientX||innerWidth/2) : innerWidth/2;
+    const y = ev ? (ev.clientY||innerHeight/2) : innerHeight/2;
+    if(!wasFamily && familyStarDay(viewDate)){
+      celebrate('🎆'); playFamily(); flyStars(x,y,'🎉',8);
+      toast('全家达标日达成！家庭积分 +5');
+    } else if(late){
+      playDing(); flyStars(x,y,'🕐',2);
+      toast('补卡 +'+got+' 分（当天打卡可得 '+e.pts+' 分）');
+    } else {
+      playDing(); flyStars(x,y,'⭐',3);
+      toast('+'+got+' 分 · '+m.name+'「'+e.title+'」');
+    }
+  }
+  save(); renderAll();
+}
 
 /* ================= 看板模式 ================= */
 function renderBoard(){
@@ -834,7 +906,17 @@ function renderBoard(){
       <div><div class="bname">${esc(m.name)}</div><div class="bsub">🔥 ${streak(m.id)} 天 · 总分 ${totalPts(m.id)}</div></div>
       <div class="bpts"><b>${memberDayPts(m.id,viewDate)}</b><span>今日</span></div>
     </div>`;
-    evts.forEach(e=>{ html+=`<div class="bevt">🕐 ${e.time} ${esc(e.title)}</div>`; });
+    evts.forEach(e=>{
+      if(e.pts){
+        const rec=lg['ev_'+e.id]; const done=!!rec; const got=earnedEvPts(e,rec,viewDate);
+        const au=auditOf(viewDate,'ev_'+e.id);
+        html+=`<div class="bevt evt-click ${done?'done':''} ${au==='cheat'?'cheat':''}" onclick="toggleEvent('${e.id}',event)">
+          🕐 ${e.time} ${esc(e.title)}
+          <span style="float:right;font-weight:900;color:var(--gold)">${done?(got>=0?'+'+got:got):'+'+e.pts} ${done?(au==='cheat'?'✗':'✓'):'○'}</span></div>`;
+      }else{
+        html+=`<div class="bevt">🕐 ${e.time} ${esc(e.title)}</div>`;
+      }
+    });
     html+='<div class="btasks">';
     ts.forEach(t=>{
       const rec=lg[t.id]; const done=!!rec; const c=CATS[t.cat]||CATS.study;
@@ -872,19 +954,27 @@ function renderAudit(){
   let any=false;
   D.members.forEach(m=>{
     const lg=dayLog(viewDate);
-    const done=tasksOf(m.id).filter(t=>lg[t.id]);
-    if(!done.length) return;
+    const doneTasks=tasksOf(m.id).filter(t=>lg[t.id]);
+    const doneEvts=eventsOn(viewDate).filter(e=>e.mid===m.id && e.pts && lg['ev_'+e.id]);
+    if(!doneTasks.length && !doneEvts.length) return;
     any=true;
     html+=`<h4 style="margin:10px 0 6px">${m.emoji} ${esc(m.name)}（复核后今日 ${memberDayPts(m.id,viewDate)} 分）</h4>`;
-    done.forEach(t=>{
-      const a=auditOf(viewDate,t.id); const rec=lg[t.id];
-      html+=`<div class="setting-item">
-        <span class="grow">${esc(t.title)}
-          <span class="log-adjust">${rec&&rec.t?('打卡 '+rec.t):''}${isLate(t,rec,viewDate)?' · 延期':''}</span></span>
-        <button class="btn btn-sm ${!a?'btn-p':'btn-g'}" onclick="setAudit('${t.id}',null)">通过</button>
-        <button class="btn btn-sm ${a==='good'?'btn-p':'btn-g'}" onclick="setAudit('${t.id}','${'good'}')">🌟优秀+1</button>
-        <button class="btn btn-sm ${a==='cheat'?'btn-danger':'btn-g'}" onclick="setAudit('${t.id}','${'cheat'}')">❌未完成</button>
+    const auditRow=(key,title,sub)=>{
+      const a=auditOf(viewDate,key);
+      return `<div class="setting-item">
+        <span class="grow">${title}<span class="log-adjust">${sub}</span></span>
+        <button class="btn btn-sm ${!a?'btn-p':'btn-g'}" onclick="setAudit('${key}',null)">通过</button>
+        <button class="btn btn-sm ${a==='good'?'btn-p':'btn-g'}" onclick="setAudit('${key}','good')">🌟优秀+1</button>
+        <button class="btn btn-sm ${a==='cheat'?'btn-danger':'btn-g'}" onclick="setAudit('${key}','cheat')">❌未完成</button>
       </div>`;
+    };
+    doneTasks.forEach(t=>{
+      const rec=lg[t.id];
+      html+=auditRow(t.id, esc(t.title), (rec&&rec.t?('打卡 '+rec.t):'')+(isLate(t,rec,viewDate)?' · 延期':''));
+    });
+    doneEvts.forEach(e=>{
+      const rec=lg['ev_'+e.id];
+      html+=auditRow('ev_'+e.id, '🕐 '+esc(e.title), (rec&&rec.t?('打卡 '+rec.t):'')+(rec&&rec.d>viewDate?' · 补卡':''));
     });
   });
   if(!any) html+='<p class="hint">这一天还没有已打卡的任务。</p>';
@@ -1297,8 +1387,47 @@ function renderSetting(){
       : `${e.start} ~ ${e.end} · 周${(e.dows||[]).map(d=>DOW_CN[d]).join('、')}`;
     html3+=`<div class="setting-item"><b>${m.emoji}${esc(m.name)}</b>
       <span class="grow">${esc(e.title)} · ${e.time}${e.endTime?'–'+e.endTime:''}<br><span class="log-adjust">${desc}</span></span>
+      加分 <input type="number" style="width:58px" min="0" max="5" value="${e.pts||0}" title="0=只显示不打卡"
+        onchange="updEventPts(${i},parseInt(this.value)||0)">分
+      <button class="btn btn-g btn-sm" onclick="editEvent('${e.id}')">${editEventId===e.id?'收起':'改'}</button>
       <button class="btn btn-danger btn-sm" onclick="delEvent(${i})">删</button></div>`;
+    if(editEventId===e.id){
+      html3+=`<div class="setting-item" style="flex-direction:column;align-items:stretch;background:#fffbef;border-color:#f2dfae">
+        <div class="row">
+          成员 <select onchange="updEvent('${e.id}','mid',this.value)">
+            ${D.members.map(x=>`<option value="${x.id}" ${e.mid===x.id?'selected':''}>${x.emoji}${esc(x.name)}</option>`).join('')}</select>
+          名称 <input class="grow" value="${esc(e.title)}" onchange="updEvent('${e.id}','title',this.value)">
+        </div>
+        <div class="row" style="margin-top:6px">
+          开始 <input type="time" value="${e.time}" onchange="updEvent('${e.id}','time',this.value)">
+          结束 <input type="time" value="${e.endTime||''}" onchange="updEvent('${e.id}','endTime',this.value)">
+        </div>`;
+      if(e.mode==='range'){
+        html3+=`<div class="row" style="margin-top:6px">
+          从 <input type="date" value="${e.start}" onchange="updEvent('${e.id}','start',this.value)">
+          到 <input type="date" value="${e.end}" onchange="updEvent('${e.id}','end',this.value)">
+        </div>
+        <div class="row" style="margin-top:6px">重复：
+          ${[1,2,3,4,5,6,0].map(d=>`<label style="font-size:13px"><input type="checkbox" ${(e.dows||[]).includes(d)?'checked':''}
+            onchange="updEventDow('${e.id}',${d},this.checked)">周${DOW_CN[d]}</label>`).join('')}
+        </div>`;
+      }else{
+        html3+=`<div class="row" style="margin-top:6px;gap:6px">
+          ${(e.dates||[]).map(d=>`<span class="chip" style="background:#eef1f7">${d.slice(5)}
+            <b style="cursor:pointer;color:#d64533" onclick="evDelDate('${e.id}','${d}')">×</b></span>`).join('')}
+        </div>
+        <div class="row" style="margin-top:6px">
+          <input type="date" id="edDate_${e.id}">
+          <button class="btn btn-g btn-sm" onclick="evAddDate('${e.id}')">＋ 添加一天</button>
+        </div>`;
+      }
+      html3+=`<div class="row" style="margin-top:8px">
+        <button class="btn btn-p btn-sm" onclick="editEvent(null)">完成编辑</button>
+        <span class="hint" style="margin:0">改动即时生效并已保存</span>
+      </div></div>`;
+    }
   });
+  html3+='<p class="hint" style="margin:6px 0">加分 ≥1 的日程会变成可点击打卡项：当天打卡得全分，隔天补卡减半，家长复核同样适用；设为 0 则只在课表显示、不参与积分。</p>';
   html3+=`
   <h4 style="margin:12px 0 6px">＋ 添加课程 / 固定日程</h4>
   <div class="row">
@@ -1314,6 +1443,9 @@ function renderSetting(){
   </div>
   <div class="row" style="margin-top:6px" id="evDows">
     重复：${[1,2,3,4,5,6,0].map(d=>`<label style="font-size:13px"><input type="checkbox" value="${d}" ${d>=1&&d<=5?'checked':''}>周${DOW_CN[d]}</label>`).join('')}
+  </div>
+  <div class="row" style="margin-top:6px">
+    完成加分 <input type="number" id="evPts" style="width:58px" min="0" max="5" value="2">分（0=只显示不打卡）
   </div>
   <button class="btn btn-p btn-sm" style="margin-top:8px" onclick="addEvent()">添加日程</button>
   <p class="hint">只有一天的日程：开始和结束选同一天即可。</p>`;
@@ -1349,9 +1481,47 @@ function addEvent(){
   const start=document.getElementById('evStart').value;
   const end=document.getElementById('evEndDate').value;
   const dows=[...document.querySelectorAll('#evDows input:checked')].map(x=>parseInt(x.value));
+  const pts=parseInt(document.getElementById('evPts').value)||0;
   if(!title||!start||!end||!time){ toast('请填写名称、时间和起止日期'); return; }
-  D.events.push({id:'e'+Date.now(), mid, title, mode:'range', time, endTime, start, end, dows});
+  const e={id:'e'+Date.now(), mid, title, mode:'range', time, endTime, start, end, dows};
+  if(pts>0) e.pts=pts;
+  D.events.push(e);
   save(); toast('日程已添加'); renderAll();
+}
+function updEventPts(i,v){
+  if(v>0) D.events[i].pts=v; else delete D.events[i].pts;
+  save(); renderBoard(); renderToday(); toast(v>0?'该日程完成可得 '+v+' 分':'该日程已设为只显示');
+}
+/* ===== 日程编辑 ===== */
+let editEventId=null;
+function editEvent(id){ editEventId = (editEventId===id||id===null) ? null : id; renderSetting(); }
+function updEvent(id,k,v){
+  const e=D.events.find(x=>x.id===id); if(!e) return;
+  if(k==='endTime' && !v) delete e.endTime;
+  else if((k==='time'||k==='title'||k==='start'||k==='end') && !v) return; // 关键字段不允许清空
+  else e[k]=v;
+  if(e.mode==='range' && e.start>e.end){ const s=e.start; e.start=e.end; e.end=s; }
+  save(); renderBoard(); renderToday(); renderWeek(); renderSetting();
+}
+function updEventDow(id,d,checked){
+  const e=D.events.find(x=>x.id===id); if(!e) return;
+  e.dows=e.dows||[];
+  if(checked){ if(!e.dows.includes(d)) e.dows.push(d); }
+  else e.dows=e.dows.filter(x=>x!==d);
+  save(); renderBoard(); renderToday(); renderWeek();
+}
+function evAddDate(id){
+  const inp=document.getElementById('edDate_'+id);
+  const v=inp?inp.value:''; if(!v){ toast('先选一个日期'); return; }
+  const e=D.events.find(x=>x.id===id); if(!e) return;
+  e.dates=e.dates||[];
+  if(!e.dates.includes(v)){ e.dates.push(v); e.dates.sort(); }
+  save(); renderBoard(); renderToday(); renderWeek(); renderSetting();
+}
+function evDelDate(id,d){
+  const e=D.events.find(x=>x.id===id); if(!e) return;
+  e.dates=(e.dates||[]).filter(x=>x!==d);
+  save(); renderBoard(); renderToday(); renderWeek(); renderSetting();
 }
 
 /* ================= 备份 ================= */
